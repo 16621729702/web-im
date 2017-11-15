@@ -1,6 +1,6 @@
 # web-im
 
-> Huanxin web-im based chat tool
+> 基于环信web-im 开发的即时聊天工具
 
 ## Build Setup
 
