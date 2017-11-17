@@ -7,7 +7,6 @@ const vueLoaderConfig = require('./vue-loader.conf')
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
-
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
@@ -25,6 +24,9 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      'less_url': resolve('src/assets/less'),
+      'module_path': resolve('src/modules'),
+      'component_path': resolve('src/components')
     }
   },
   module: {
@@ -44,6 +46,11 @@ module.exports = {
         loader: 'vue-loader',
         options: vueLoaderConfig
       },
+      {
+        test: /\.less$/,
+        loader: 'less-loader',
+        options: vueLoaderConfig
+      }, 
       {
         test: /\.js$/,
         loader: 'babel-loader',
