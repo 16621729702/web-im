@@ -22,25 +22,35 @@ Vue.prototype.$cookie = cookieHandler
 
 let store = new Vuex.Store({
   state: {
-    chatRecord: [],
+    chatRecord: {},
     contact: {},
-    scroller: 0
+    user: {},
+    selected: ''
   },
   mutations: {
-    writeInIndex (state, l) {
-      state.list = l
+    setUser (state, u) {
+      state.user = u
     },
-    writeInIndexPage (state, p) {
-      state.page = p
+    setChatRecord (state, name, d) {
+      // if (a) {
+      //   state.chatRecord[name] = d;
+      // }
     },
-    writeInScroller (state, s) {
-      state.scroller = s
+    setContact (state, p) {
+      state.contact[p.name] = p.data
+    },
+    setSelected (state, s) {
+      state.selected = s
+    },
+    setConcatStatus (state, c) {
+      state.contact[c.name].detail = c.status
     }
   },
   getters: {
-    indexList: state => { return state.list },
-    indexPage: state => { return state.page },
-    indexScroller: state => { return state.scroller }
+    getUser: state => state.user,
+    getChatRecord: state => state.chatRecord,
+    getContact: state => state.contact,
+    getSelected: state => state.selected
   }
 })
 /* eslint-disable no-new */

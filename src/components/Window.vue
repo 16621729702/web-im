@@ -22,14 +22,14 @@
     },
     created () {
       let me = this
-      const cookies = me.$cookie.analysisCookie()
-      if (cookies.username && cookies.nick && cookies.avatar && cookies.token && cookies.pd) {
+      let user = me.$store.getters.getUser
+      if (user.username && user.nick && user.avatar && user.token && user.pd) {
         me.user = {
-          avatar: decodeURIComponent(cookies.avatar),
-          nick: decodeURIComponent(cookies.nick),
-          token: decodeURIComponent(cookies.token),
-          pd: decodeURIComponent(cookies.pd),
-          username: decodeURIComponent(cookies.username)
+          avatar: decodeURIComponent(user.avatar),
+          nick: decodeURIComponent(user.nick),
+          token: decodeURIComponent(user.token),
+          pd: decodeURIComponent(user.pd),
+          username: decodeURIComponent(user.username)
         }
       } else {
         me.$router.replace('/login')
@@ -44,6 +44,7 @@
         me.$cookie.setCookie('avatar', '', -1)
         me.$cookie.setCookie('token', '', -1)
         me.$cookie.setCookie('pd', '', -1)
+        me.$store.commit('setUser', {})
         me.$webIM.close()
         me.$notify('已退出', 'success')
         me.$router.replace('/login')

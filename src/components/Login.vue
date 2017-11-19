@@ -18,7 +18,8 @@ export default {
     return {
       username: '',
       pwd: '',
-      text: '登录'
+      text: '登录',
+      user: {}
     }
   },
   mounted () {
@@ -30,7 +31,8 @@ export default {
       me.$cookie.setCookie('avatar', cookies.avatar, 2)
       me.$cookie.setCookie('token', cookies.token, 2)
       me.$cookie.setCookie('pd', cookies.pd, 2)
-      me.webImLogin(cookies.username, cookies.pd)
+      me.setCurUser(cookies.username, cookies.nick, cookies.avatar, cookies.token, cookies.pd)
+      me.webImLogin()
     }
   },
   methods: {
@@ -57,7 +59,8 @@ export default {
             me.$cookie.setCookie('avatar', user.avatar_url, 2)
             me.$cookie.setCookie('token', json.access_token, 2)
             me.$cookie.setCookie('pd', user.pd, 2)
-            me.webImLogin(user.username, user.pd)
+            me.setCurUser(user.username, user.nick, user.avatar_url, json.access_token, user.pd)
+            me.webImLogin()
           },
           error: (err) => {
             let text = '网络繁忙，请稍候再试'
@@ -70,21 +73,32 @@ export default {
         })
       }
     },
-    webImLogin (username, auth, type) {
+    setCurUser (u, n ,a ,t, p) {
       let me = this
-      if (!username || !auth) {
+      me.user = {
+        username: u,
+        nick: n,
+        avatar: a,
+        token: t,
+        pd: p
+      }
+    },
+    webImLogin () {
+      let me = this
+      if (!me.user.username || !me.user.pd) {
         me.$notify(me.$lang.notEmpty, 'error')
         return
       }
       let options = {
         apiUrl: window.WebIM.config.apiURL,
-        user: username.toLowerCase(),
-        pwd: auth,
+        user: me.user.username.toLowerCase(),
+        pwd: me.user.pd,
         // accessToken: auth,
         appKey: window.WebIM.config.appkey,
         success: function (token) {
-          me.$cookie.setCookie('webim_' + window.btoa(username).replace(/=*$/g, ''), token.access_token, 2)
+          me.$cookie.setCookie('webim_' + window.btoa(me.user.username).replace(/=*$/g, ''), token.access_token, 2)
           me.$router.replace('/window/chat')
+          me.$store.commit('setUser', me.user);
         },
         error: function () {
           me.$router.replace(window.location.href)
