@@ -2,7 +2,10 @@
   <div class="web-im-window">
    <div class="boxsizing web-im-menu" v-if="user.avatar">
      <Avatar :src="user.avatar" :title="user.nick"></Avatar>
-     <div class="web-im-menuList"></div>
+     <div class="web-im-menuList tc">
+       <div class="icon icon-liaotianyoudian pointer" title="聊天"></div>
+       <div class="icon icon-dingdan pointer" title="我的订单"></div>
+     </div>
      <div class="icon icon-dianyuan web-im-logout pointer" title="退出" @click="logout"></div>
    </div>
     <router-view></router-view>

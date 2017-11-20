@@ -5,7 +5,9 @@
     </div>
     <div class="web-im-messageWindow" v-show="selected">
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
-      <div class="web-im-messages"></div>
+      <div class="web-im-messages clr">
+        <Messages v-if="selectedRecord" v-for="(item, index) in selectedRecord" :item="item" :key="index"></Messages>
+      </div>
     </div>
     <div class="web-im-inputWindow" v-show="selected">
       <div class="web-im-selectors">
@@ -20,14 +22,16 @@
 
 <script>
   import ContactItem from '@/components/ContactItem'
+  import Messages from '@/components/Messages'
+
   export default {
     name: 'Chat',
     components: {
-      ContactItem: ContactItem
+      ContactItem: ContactItem,
+      Messages: Messages
     },
     data () {
       return {
-        chatRecord: {},
         text: ''
       }
     },
@@ -36,14 +40,19 @@
         return this.$store.getters.getSelected
       },
       contact () {
+        return this.$store.getters.getContact
+      },
+      chatRecord () {
+        return this.$store.getters.getChatRecord
+      },
+      selectedRecord () {
         let me = this
-        return me.$store.getters.getContact
-        // return Object.assign({}, me.$store.getters.getContact)
+        return me.chatRecord[me.selected]
       }
     },
     watch: {
-      contact () {
-        this.render()
+      selectedRecord (n , o) {
+        this.$forceUpdate()
       }
     },
     created () {
@@ -58,65 +67,68 @@
             json.forEach((item) => {
               if (item.from_user) {
                 const payload = item.new_payload.bodies[0];
-                const from_user = (item.from_user.username !== user.username ? item.from_user : item.to_user);
-                //       var to_user = (item.from_user.username === Demo.ziyaUser.username ? item.from_user : item.to_user);
-                //       var finalType = payload.type;
-                //       var message = {
-                //         error: false,
-                //         ext: {
-                //           nickname: from_user.nick,
-                //           attr2: "v2",
-                //           avatar: from_user.avatar_url,
-                //           attr1: "v1"
-                //         },
-                //         from: from_user.username,
-                //         id: item._id,
-                //         to: to_user.username,
-                //         type: 'chat',
-                //         created: item.created
-                //       };
-                //       if (payload.type === 'txt') {
-                //         message.data = payload.msg;
-                //         if (item.new_payload.ext && item.new_payload.ext.isWebURL) {
-                //           message.ext.isWebURL = item.new_payload.ext.isWebURL;
-                //           message.ext.webChatDetail = item.new_payload.ext.webChatDetail;
-                //           message.ext.webChatHref = item.new_payload.ext.webChatHref;
-                //           message.ext.webChatImage = item.new_payload.ext.webChatImage;
-                //           message.ext.webChatTitle = item.new_payload.ext.webChatTitle;
-                //         }
-                //       } else if (payload.type === 'img') {
-                //         message.accessToken = Demo.token;
-                //         message.secret = payload.secret;
-                //         message.filename = payload.filename;
-                //         message.url = payload.url;
-                //         message.file_length = payload.file_length;
-                //         message.height = payload.size.height;
-                //         message.width = payload.size.width;
-                //         message.thumb = payload.size.thumb;
-                //         if (payload.isLocation) {
-                //           message.ext.isLocation = true;
-                //           message.ext.locationAddress = payload.locationAddress;
-                //           message.ext.locationLatitude = payload.locationLatitudes;;
-                //           message.ext.locationLongitude = payload.locationLongitude;
-                //           message.ext.locationName = payload.locationName;
-                //         }
-                //       } else if (payload.type === 'audio') {
-                //         message.secret = payload.secret;
-                //         message.filename = payload.filename;
-                //         message.url = payload.url;
-                //         message.file_length = payload.file_length;
-                //         finalType = 'aud';
-                //       } else {
-                //         return null;
-                //       }
+                const from_user = (item.from_user.username !== user.username ? item.from_user : item.to_user)
+                const to_user = (item.from_user.username ===user.username ? item.from_user : item.to_user)
+                let finalType = payload.type;
+                let message = {
+                  error: false,
+                  ext: {
+                    nickname: from_user.nick,
+                    avatar: from_user.avatar_url
+                  },
+                  from: from_user.username,
+                  id: item._id,
+                  to: to_user.username,
+                  type: 'chat',
+                  created: item.created,
+                  status: item.status
+                };
+                if (payload.type === 'txt') {
+                  message.data = payload.msg
+                  if (item.new_payload.ext && item.new_payload.ext.isWebURL) {
+                    finalType === 'url'
+                    message.ext.webChatDetail = item.new_payload.ext.webChatDetail
+                    message.ext.webChatHref = item.new_payload.ext.webChatHref
+                    message.ext.webChatImage = item.new_payload.ext.webChatImage
+                    message.ext.webChatTitle = item.new_payload.ext.webChatTitle
+                  }
+                } else if (payload.type === 'img') {
+                  message.accessToken = user.token
+                  message.secret = payload.secret
+                  message.filename = payload.filename
+                  message.url = payload.url
+                  message.height = payload.size.height
+                  message.width = payload.size.width
+                  if (payload.isLocation) {
+                    finalType = 'loc'
+                    message.ext.locationAddress = payload.locationAddress
+                    message.ext.locationLatitude = payload.locationLatitude
+                    message.ext.locationLongitude = payload.locationLongitude
+                    message.ext.locationName = payload.locationName
+                  }
+                } else if (payload.type === 'audio') {
+                  message.secret = payload.secret
+                  message.filename = payload.filename
+                  message.url = payload.url
+                } else {
+                  return 
+                }
+                message = me.$messageHandler(message, finalType, user)
                 if (!me.contact[from_user.username]) {
                   me.$store.commit('setContact', {
                     name: from_user.username, 
                     data: {
                       detail: false,
                       avatar: from_user.avatar_url,
-                      nick: from_user.nick
+                      nick: from_user.nick,
+                      unread: message.data.status === 'unread' ? 1 : 0,
+                      brief: message.brief
                     }
+                  })
+                  me.$store.commit('setChatRecord', {
+                    target: 'replace',
+                    name: from_user.username,
+                    data: [message.data]
                   })
                 }
               }

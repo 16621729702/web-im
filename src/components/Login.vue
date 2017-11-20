@@ -97,6 +97,7 @@ export default {
         appKey: window.WebIM.config.appkey,
         success: function (token) {
           me.$cookie.setCookie('webim_' + window.btoa(me.user.username).replace(/=*$/g, ''), token.access_token, 2)
+          me.user.imToken = token.access_token
           me.$router.replace('/window/chat')
           me.$store.commit('setUser', me.user);
         },
