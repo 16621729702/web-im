@@ -46,6 +46,7 @@ export default {
           type: 'get',
           success: function (data) {
             let json = JSON.parse(data).entities.reverse()
+            // let unread = 0
             me.$store.commit('setChatRecord', {
               target: 'replace',
               name: me.username,
@@ -100,12 +101,14 @@ export default {
                 return
               }
               message = me.$messageHandler(message, finalType, me.curUser)
+              // message.data.status === 'unread' && (unread += 1)
               me.$store.commit('setChatRecord', {
                 target: 'append',
                 name: me.username,
                 data: message.data
               })
             })
+            // me.$store.commit('setConcatUnread', { name: uid, unread: unread })
             me.$store.commit('setConcatStatus', { name: uid, status: true })
             me.$store.commit('setSelected', uid)
           },

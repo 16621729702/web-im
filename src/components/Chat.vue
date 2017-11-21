@@ -35,7 +35,7 @@
         text: ''
       }
     },
-    computed :{
+    computed: {
       selected () {
         return this.$store.getters.getSelected
       },

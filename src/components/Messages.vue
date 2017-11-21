@@ -4,7 +4,7 @@
     <span :class="'inlineblock ' + byMe">{{ item.userInfo.nickname }}</span>
     <span :class="'inlineblock ' + byMe +  ' web-im-messageFormat'">{{ item.format }}</span>
     <div class="clr"></div>
-    <div class="inlineblock web-im-messageContent">
+    <div :class="['inlineblock', 'web-im-messageContent', (item.type === 'audio' && item.url === soundHref) ? 'web-im-blink' : '']">
       <img class="web-im-messageImage" v-if="item.type === 'img'" :src="item.url" />
       <div class="web-im-messageUrl pointer" v-else-if="item.type === 'url'" @click="openNewTab" :data-href="item.href">
         <img :src="item.image" />
@@ -37,6 +37,11 @@ export default {
   },
   props: {
     item: {}
+  },
+  computed: {
+    soundHref () {
+      return this.$store.getters.getSound
+    }
   },
   data () {
     return {

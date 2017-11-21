@@ -1,5 +1,5 @@
 <template>
-  <div class="web-im-messageAudio pointer" @click="playAudio">
+  <div class="web-im-messageAudio pointer" @click="playAudio" :data-src="message.url">
     <span class="inlineblock icon icon-weibiaoti102"></span>　声音
   </div>
 </template>
@@ -12,14 +12,12 @@ export default {
   },
   methods: {
     playAudio (e) {
-      let me = this
-      let target = e.currentTarget.parentNode
-      if (target.classList.contains('web-im-blink')) {
-        target.classList.remove('web-im-blink')
-      } else {
-        target.classList.add('web-im-blink')
+      let t = e.currentTarget
+      let src = ''
+      if (!t.parentNode.classList.contains('web-im-blink')) {
+        src = t.dataset.src
       }
-      console.log(me.message)
+      this.$sound(src)
     }
   }
 }

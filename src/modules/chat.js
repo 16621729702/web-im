@@ -20,13 +20,23 @@ conn.listen({
     console.log(message)
   },
   onTextMessage: function (message) {
-    console.log(message)
+    let txt = window.app.$messageHandler(message)
+    window.app.$store.commit('setChatRecord', {
+      target: 'replace',
+      name: from_user.username,
+      data: [txt.data]
+    })
   }, //收到文本消息
   onEmojiMessage: function (message) {
     console.log(message)
   }, //收到表情消息
   onPictureMessage: function (message) {
-    console.log(message)
+    let pic = window.app.$messageHandler(message)
+    window.app.$store.commit('setChatRecord', {
+      target: 'replace',
+      name: from_user.username,
+      data: [pic.data]
+    })
   }, //收到图片消息
   onCmdMessage: function (message) {
     console.log(message)

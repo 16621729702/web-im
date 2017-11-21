@@ -3,8 +3,8 @@
    <div class="boxsizing web-im-menu" v-if="user.avatar">
      <Avatar :src="user.avatar" :title="user.nick"></Avatar>
      <div class="web-im-menuList tc">
-       <div class="icon icon-liaotianyoudian pointer" title="聊天"></div>
-       <div class="icon icon-dingdan pointer" title="我的订单"></div>
+       <div :class="['icon', 'icon-liaotianyoudian', 'pointer', selectedMenu === 'chat' ? 'selected' : '']" title="聊天" data-menu="chat" @click="selectMenu"></div>
+       <div :class="['icon', 'icon-dingdan', 'pointer', selectedMenu === 'order' ? 'selected' : '']" title="我的订单" data-menu="order" @click="selectMenu"></div>
      </div>
      <div class="icon icon-dianyuan web-im-logout pointer" title="退出" @click="logout"></div>
    </div>
@@ -20,7 +20,12 @@
     },
     data () {
       return {
-        user: {}
+        user: {},
+        selectedMenu: 'chat',
+        routers: {
+          chat: '/window/chat',
+          order: '/window/menu'
+        }
       }
     },
     created () {
@@ -39,6 +44,12 @@
       }
     },
     methods: {
+      selectMenu (e) {
+        let me = this
+        let menu = e.currentTarget.dataset.menu
+        me.selectedMenu = menu
+        me.$router.replace(me.routers[menu])
+      },
       logout () {
         let me = this
         me.user = {}

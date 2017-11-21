@@ -7,7 +7,7 @@ import router from './routers'
 import ajax from 'module_path/ajax'
 import custom from 'module_path/custom.js'
 import webIM from 'module_path/chat.js'
-import { Chinese } from 'module_path/language.js'
+// import { Chinese } from 'module_path/language.js'
 import * as cookieHandler from 'module_path/cookie'
 
 Vue.config.productionTip = false
@@ -17,7 +17,7 @@ Vue.use(Vuex)
 
 Vue.prototype.$ajax = ajax
 Vue.prototype.$webIM = webIM
-Vue.prototype.$lang = Chinese
+// Vue.prototype.$lang = Chinese
 Vue.prototype.$cookie = cookieHandler
 Vue.prototype.$messageHandler = function (message, type, me) {
   // console.log(message)
@@ -84,7 +84,8 @@ let store = new Vuex.Store({
     chatRecord: {},
     contact: {},
     user: {},
-    selected: ''
+    selected: '',
+    sound: ''
   },
   mutations: {
     setUser (state, u) {
@@ -105,13 +106,20 @@ let store = new Vuex.Store({
     },
     setConcatStatus (state, c) {
       state.contact[c.name].detail = c.status
+    },
+    setConcatUnread (state, c) {
+      state.contact[c.name].unread = c.unread
+    },
+    setSound (state, i) {
+      state.sound = i
     }
   },
   getters: {
     getUser: state => state.user,
     getChatRecord: state => state.chatRecord,
     getContact: state => state.contact,
-    getSelected: state => state.selected
+    getSelected: state => state.selected,
+    getSound: state => state.sound
   }
 })
 /* eslint-disable no-new */
