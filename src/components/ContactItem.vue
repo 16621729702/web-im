@@ -38,6 +38,7 @@ export default {
       if (me.$refs.contactItem.classList.contains('selected')) {
         return
       }
+      me.$sound('')
       let uid = e.currentTarget.dataset.uid
       let cur = me.$store.getters.getContact[uid]
       if (!cur.detail) {
