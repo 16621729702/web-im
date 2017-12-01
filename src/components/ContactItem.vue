@@ -108,7 +108,7 @@ export default {
               } else {
                 return
               }
-              message = me.$messageHandler(message, finalType, me.curUser)
+              message = me.$tranformHistoryMessage(message, finalType, me.curUser)
               me.$store.dispatch('setChatRecord', {
                 name: me.username,
                 data: message.data

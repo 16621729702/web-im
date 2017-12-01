@@ -127,7 +127,7 @@
                 } else {
                   return
                 }
-                message = me.$messageHandler(message, finalType, user)
+                message = me.$tranformHistoryMessage(message, finalType, user)
                 if (!me.contact[from_user.username]) {
                   me.$store.commit('setContact', {
                     name: from_user.username,

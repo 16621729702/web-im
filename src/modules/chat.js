@@ -18,56 +18,26 @@ conn.listen({
   },
   onTextMessage: function (message) {
     window.app.$soundNotify()
-    console.log(message)
-    let finalType = message.type
-    if (finalType === 'txt') {
-      if (item.new_payload.ext && item.new_payload.ext.isWebURL) {
-        finalType = 'url'
-      }
-    }
-    let me = window.app.$store.getters.getUser
-    let m = window.app.$messageHandler(m, finalType, me)
-    window.app.$store.dispatch('setChatRecord', {
-      name: me.username,
-      data: message.data
-    })
-    // let user = 
-    // let txt = window.app.$messageHandler(message , 'text', me.$store.getters.getUser)
-    // window.app.$store.dispatch('setChatRecord', {
-    //   target: 'replace',
-    //   name: from_user.username,
-    //   data: [txt.data]
-    // })
+    window.app.$tranformReceivedMessage(message, 'txt', true)
   },
   onEmojiMessage: function (message) {
-    window.app.$soundNotify()
-    console.log(message)
+    // window.app.$soundNotify()
+    // window.app.$tranformReceivedMessage(message, 'emoji', true)
   },
   onPictureMessage: function (message) {
-    let pic = window.app.$messageHandler(message)
     window.app.$soundNotify()
-    // window.app.$store.dispatch('setChatRecord', {
-    //   target: 'replace',
-    //   name: from_user.username,
-    //   data: [pic.data]
-    // })
-  }, //收到图片消息
-  onCmdMessage: function (message) {
-    window.app.$soundNotify()
-    console.log(message)
+    window.app.$tranformReceivedMessage(message, 'img', true)
   },
+  onCmdMessage: function (message) {},
   onAudioMessage: function (message) {
     window.app.$soundNotify()
-    console.log(message)
+    window.app.$tranformReceivedMessage(message, 'audio', true)
   },
   onLocationMessage: function (message) {
     window.app.$soundNotify()
-    console.log(message)
+    window.app.$tranformReceivedMessage(message, 'loc', true)
   },
-  onFileMessage: function (message) {
-    window.app.$soundNotify()
-    console.log(message)
-  },
+  onFileMessage: function (message) {},
   onVideoMessage: function (message) {
     var node = document.getElementById('privateVideo')
     var option = {
