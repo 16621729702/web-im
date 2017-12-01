@@ -36,12 +36,12 @@ Vue.prototype.$messageHandler = function (message, type, me) {
   }
   result.data.format = (message.created ? new Date(message.created) : new Date()).toLocaleString()
   switch (type) {
-    case 'txt' :
+    case 'txt':
       result.brief = message.data
       result.data.data = message.data
       break
-    case 'sticker' :
-      result.brief = message.data
+    case 'sticker':
+      result.brief = '[ 表情 ]'
       result.data.data = message.data
       break
     case 'loc':

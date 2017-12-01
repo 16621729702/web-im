@@ -42,7 +42,6 @@ export default {
       }
       me.requesting = true
       me.$sound('')
-      // me.$emit('back', true)
       let uid = e.currentTarget.dataset.uid
       let cur = me.$store.getters.getContact[uid]
       if (!cur.detail) {
@@ -115,19 +114,21 @@ export default {
                 data: message.data
               })
             })
-            me.$store.commit('setConcatStatus', { name: uid, status: true })
-            me.$store.commit('setSelected', uid)
-            // me.$store.commit('setConcatUnread', { name: uid, unrea: 0})
+            me.successhandler(uid)
           },
           error: function () {
             me.$notify('网络错误，请稍候重试', 'error')
           }
         })
       } else {
-        me.$store.commit('setConcatStatus', { name: uid, status: true })
-        me.$store.commit('setSelected', uid)
-        // me.$store.commit('setConcatUnread', { name: uid, unrea: 0})
+        me.successhandler(uid)
       }
+    },
+    successhandler: function (uid) {
+      let me = this
+      me.$store.commit('setConcatStatus', { name: uid, status: true })
+      me.$store.commit('setSelected', uid)
+      receipt(me.curUser.username , uid)
     }
   }
 }

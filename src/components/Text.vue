@@ -15,13 +15,12 @@ export default {
       emojiUrl: 'https://s.ziyadiaoyu.com/{name}.png'
     }
   },
-  created () {
+  mounted () {
     let me = this
-    var text = me.message.data
-    var url = text.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/i)
-    if (url) {
-      me.text = text.replace(url[0], '<a class="inlineblock web-im-textHref" target="_blank" href="' + url[0] + '">' + url[0] + '</a>')
-    }
+    let text = me.message.data
+    text = text.replace(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/i, function (item) {
+      return '<a class="inlineblock web-im-textHref" target="_blank" href="' + item + '">' + item + '</a>'
+    })
     me.text = text.replace(/\[[^\x00-\xff]+\]/g, function (str) {
       return '<img src="' + me.emojiUrl.replace('{name}', emoji[str]) + '" width="30" height="30" class="web-im-emoji" />'
     })
@@ -30,7 +29,6 @@ export default {
 </script>
 <style lang="less">
   .web-im-textHref{
-    padding: 0 5px;
     color: #039bfb;
     text-decoration: none;
     &:hover {

@@ -17,6 +17,7 @@ conn.listen({
     console.log(message)
   },
   onTextMessage: function (message) {
+    window.app.$soundNotify()
     console.log(message)
     let finalType = message.type
     if (finalType === 'txt') {
@@ -39,10 +40,12 @@ conn.listen({
     // })
   },
   onEmojiMessage: function (message) {
+    window.app.$soundNotify()
     console.log(message)
   },
   onPictureMessage: function (message) {
     let pic = window.app.$messageHandler(message)
+    window.app.$soundNotify()
     // window.app.$store.dispatch('setChatRecord', {
     //   target: 'replace',
     //   name: from_user.username,
@@ -50,15 +53,19 @@ conn.listen({
     // })
   }, //收到图片消息
   onCmdMessage: function (message) {
+    window.app.$soundNotify()
     console.log(message)
   },
   onAudioMessage: function (message) {
+    window.app.$soundNotify()
     console.log(message)
   },
   onLocationMessage: function (message) {
+    window.app.$soundNotify()
     console.log(message)
   },
   onFileMessage: function (message) {
+    window.app.$soundNotify()
     console.log(message)
   },
   onVideoMessage: function (message) {

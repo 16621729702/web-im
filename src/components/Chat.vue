@@ -13,10 +13,9 @@
       <div class="web-im-selectors">
         <span class="inlineblock icon icon-tupian pointer"></span>
       </div>
-      <textarea class="boxsizing web-im-textarea" v-model="text" placeholder="文字消息..."></textarea>
-      <div class="fr web-im-send tc pointer">发送</div>
+      <textarea class="boxsizing web-im-textarea" v-model="messageText" placeholder="文字消息..." @keydown="downHandler" @keyup="upHandler"></textarea>
+      <div class="fr web-im-send tc pointer" @click="sendMessage">发送</div>
     </div>
-    <!-- div.wrapper -->
   </div>
 </template>
 
@@ -32,7 +31,8 @@
     },
     data () {
       return {
-        text: ''
+        messageText: '',
+        keyDown: false
       }
     },
     computed: {
@@ -156,6 +156,33 @@
       })
     },
     methods: {
+      sendMessage () {
+        let me = this
+        if (me.messageText) {
+          me.messageText = ''
+        }
+        console.log(1);
+      },
+      upHandler (e) {
+        let me = this
+        if (e.keyCode === 17) {
+          me.keyDown = false
+        }
+      },
+      downHandler (e) {
+        e.preventDefault()
+        const code = e.keyCode
+        let me = this
+        if (code === 17) {
+          me.keyDown = true
+        } else if (code === 13) {
+          if (me.keyDown) {
+            me.messageText += '\n'
+          } else {
+            me.sendMessage()
+          }
+        }
+      },
     }
   }
 </script>
