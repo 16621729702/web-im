@@ -19,9 +19,9 @@ export default new Router({
       children: [
         {
           path: 'chat',
-          component: Chat,
+          component: Chat
         }
-      ] 
+      ]
     },
     {
       path: '*',

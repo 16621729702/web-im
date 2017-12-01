@@ -14,7 +14,7 @@ export default {
       } else {
         me.$refs.sound.pause()
       }
-      app.$store.commit('setSound', str)
+      window.app.$store.commit('setSound', str)
     }
   }
 }

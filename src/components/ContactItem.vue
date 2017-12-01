@@ -35,10 +35,12 @@ export default {
   methods: {
     choose (e) {
       let me = this
-      if (me.$refs.contactItem.classList.contains('selected')) {
+      if (!me.requesting && me.$refs.contactItem.classList.contains('selected')) {
         return
       }
+      me.requesting = true
       me.$sound('')
+      // me.$emit('back', true)
       let uid = e.currentTarget.dataset.uid
       let cur = me.$store.getters.getContact[uid]
       if (!cur.detail) {
@@ -47,16 +49,15 @@ export default {
           type: 'get',
           success: function (data) {
             let json = JSON.parse(data).entities.reverse()
-            // let unread = 0
-            me.$store.commit('setChatRecord', {
+            me.$store.dispatch('setChatRecord', {
               target: 'replace',
               name: me.username,
               data: []
             })
             json.forEach((item) => {
               if (!item.from) { return }
-              let payload = item.new_payload.bodies[0];
-              let finalType = payload.type;
+              let payload = item.new_payload.bodies[0]
+              let finalType = payload.type
               let message = {
                 error: false,
                 ext: {
@@ -69,24 +70,29 @@ export default {
                 type: 'chat',
                 created: item.created,
                 status: item.status
-              };
+              }
               if (finalType === 'txt') {
                 message.data = payload.msg
-                if (item.new_payload.ext && item.new_payload.ext.isWebURL) {
-                  finalType = 'url'
-                  message.ext.webChatDetail = item.new_payload.ext.webChatDetail
-                  message.ext.webChatHref = item.new_payload.ext.webChatHref
-                  message.ext.webChatImage = item.new_payload.ext.webChatImage
-                  message.ext.webChatTitle = item.new_payload.ext.webChatTitle
+                if (item.new_payload.ext) {
+                  if (item.new_payload.ext.isWebURL) {
+                    finalType = 'url'
+                    message.ext.webChatDetail = item.new_payload.ext.webChatDetail
+                    message.ext.webChatHref = item.new_payload.ext.webChatHref
+                    message.ext.webChatImage = item.new_payload.ext.webChatImage
+                    message.ext.webChatTitle = item.new_payload.ext.webChatTitle
+                  } else if (item.new_payload.ext.isSticker) {
+                    finalType = 'sticker'
+                    message.data = item.new_payload.ext.stickerName
+                  }
                 }
               } else if (finalType === 'img') {
-                  message.accessToken = me.curUser.token
-                  message.secret = payload.secret
-                  message.filename = payload.filename
-                  message.url = payload.url
-                  message.file_length = payload.file_length
-                  message.height = payload.size.height
-                  message.width = payload.size.width
+                message.accessToken = me.curUser.token
+                message.secret = payload.secret
+                message.filename = payload.filename
+                message.url = payload.url
+                message.file_length = payload.file_length
+                message.height = payload.size.height
+                message.width = payload.size.width
                 if (payload.isLocation) {
                   finalType = 'loc'
                   message.ext.locationAddress = payload.locationAddress
@@ -102,14 +108,11 @@ export default {
                 return
               }
               message = me.$messageHandler(message, finalType, me.curUser)
-              // message.data.status === 'unread' && (unread += 1)
-              me.$store.commit('setChatRecord', {
-                target: 'append',
+              me.$store.dispatch('setChatRecord', {
                 name: me.username,
                 data: message.data
               })
             })
-            // me.$store.commit('setConcatUnread', { name: uid, unread: unread })
             me.$store.commit('setConcatStatus', { name: uid, status: true })
             me.$store.commit('setSelected', uid)
           },
@@ -117,6 +120,9 @@ export default {
             me.$notify('网络错误，请稍候重试', 'error')
           }
         })
+      } else {
+        me.$store.commit('setConcatStatus', { name: uid, status: true })
+        me.$store.commit('setSelected', uid)
       }
     }
   }

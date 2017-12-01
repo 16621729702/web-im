@@ -73,7 +73,7 @@ export default {
         })
       }
     },
-    setCurUser (u, n ,a ,t, p) {
+    setCurUser (u, n, a, t, p) {
       let me = this
       me.user = {
         username: u,
@@ -99,7 +99,7 @@ export default {
           me.$cookie.setCookie('webim_' + window.btoa(me.user.username).replace(/=*$/g, ''), token.access_token, 2)
           me.user.imToken = token.access_token
           me.$router.replace('/window/chat')
-          me.$store.commit('setUser', me.user);
+          me.$store.commit('setUser', me.user)
         },
         error: function () {
           me.$router.replace(window.location.href)

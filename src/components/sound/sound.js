@@ -7,7 +7,7 @@ let Sound = new (Vue.extend(sound))({
 
 document.querySelector('body').appendChild(Sound.$el)
 
-sound.installSound =  function (str) {
+sound.installSound = function (str) {
   Sound.load(str)
 }
 

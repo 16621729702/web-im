@@ -51,8 +51,17 @@
       }
     },
     watch: {
-      selectedRecord (n , o) {
-        this.$forceUpdate()
+      selectedRecord () {
+        let me = this
+        me.$forceUpdate()
+        me.$nextTick(() => {
+          let all = document.querySelectorAll('.web-im-message')
+          setTimeout(() => {
+            all[all.length - 1].scrollIntoView(true)
+            all = null
+            // me.contactChaning = false
+          }, 50)
+        })
       }
     },
     created () {
@@ -60,16 +69,16 @@
       me.$ajax({
         url: 'https://www.ziyadiaoyu.com/biz_im_list?token=' + me.$cookie.analysisCookie().token + '&random=' + (new Date()).getTime(),
         type: 'get',
-        success: function ( data) {
+        success: function (data) {
           let json = JSON.parse(data).entities.messages
           let user = me.$store.getters.getUser
           if (user.username) {
             json.forEach((item) => {
               if (item.from_user) {
-                const payload = item.new_payload.bodies[0];
+                const payload = item.new_payload.bodies[0]
                 const from_user = (item.from_user.username !== user.username ? item.from_user : item.to_user)
-                const to_user = (item.from_user.username ===user.username ? item.from_user : item.to_user)
-                let finalType = payload.type;
+                const to_user = (item.from_user.username === user.username ? item.from_user : item.to_user)
+                let finalType = payload.type
                 let message = {
                   error: false,
                   ext: {
@@ -82,15 +91,20 @@
                   type: 'chat',
                   created: item.created,
                   status: item.status
-                };
+                }
                 if (payload.type === 'txt') {
                   message.data = payload.msg
-                  if (item.new_payload.ext && item.new_payload.ext.isWebURL) {
-                    finalType === 'url'
-                    message.ext.webChatDetail = item.new_payload.ext.webChatDetail
-                    message.ext.webChatHref = item.new_payload.ext.webChatHref
-                    message.ext.webChatImage = item.new_payload.ext.webChatImage
-                    message.ext.webChatTitle = item.new_payload.ext.webChatTitle
+                  if (item.new_payload.ext) {
+                    if (item.new_payload.ext.isWebURL) {
+                      finalType = 'url'
+                      message.ext.webChatDetail = item.new_payload.ext.webChatDetail
+                      message.ext.webChatHref = item.new_payload.ext.webChatHref
+                      message.ext.webChatImage = item.new_payload.ext.webChatImage
+                      message.ext.webChatTitle = item.new_payload.ext.webChatTitle
+                    } else if (item.new_payload.ext.isSticker) {
+                      finalType = 'sticker'
+                      message.data = item.new_payload.ext.stickerName
+                    }
                   }
                 } else if (payload.type === 'img') {
                   message.accessToken = user.token
@@ -111,12 +125,12 @@
                   message.filename = payload.filename
                   message.url = payload.url
                 } else {
-                  return 
+                  return
                 }
                 message = me.$messageHandler(message, finalType, user)
                 if (!me.contact[from_user.username]) {
                   me.$store.commit('setContact', {
-                    name: from_user.username, 
+                    name: from_user.username,
                     data: {
                       detail: false,
                       avatar: from_user.avatar_url,
@@ -125,8 +139,8 @@
                       brief: message.brief
                     }
                   })
-                  me.$store.commit('setChatRecord', {
-                    target: 'replace',
+                  me.$store.dispatch('setChatRecord', {
+                    replace: true,
                     name: from_user.username,
                     data: [message.data]
                   })
@@ -146,6 +160,4 @@
   }
 </script>
 
-<!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style lang='less' src="less_url/_chat.less" scoped></style>
-

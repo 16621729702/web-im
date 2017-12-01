@@ -9,6 +9,8 @@ import custom from 'module_path/custom.js'
 import webIM from 'module_path/chat.js'
 // import { Chinese } from 'module_path/language.js'
 import * as cookieHandler from 'module_path/cookie'
+import notification from 'module_path/notification'
+import typeDetection from 'module_path/typeDetection'
 
 Vue.config.productionTip = false
 
@@ -19,6 +21,8 @@ Vue.prototype.$ajax = ajax
 Vue.prototype.$webIM = webIM
 // Vue.prototype.$lang = Chinese
 Vue.prototype.$cookie = cookieHandler
+Vue.prototype.$notification = notification
+Vue.prototype.$notification = notification
 Vue.prototype.$messageHandler = function (message, type, me) {
   // console.log(message)
   let result = {}
@@ -35,6 +39,10 @@ Vue.prototype.$messageHandler = function (message, type, me) {
   result.data.format = (message.created ? new Date(message.created) : new Date()).toLocaleString()
   switch (type) {
     case 'txt' :
+      result.brief = message.data
+      result.data.data = message.data
+      break
+    case 'sticker' :
       result.brief = message.data
       result.data.data = message.data
       break
@@ -91,13 +99,6 @@ let store = new Vuex.Store({
     setUser (state, u) {
       state.user = u
     },
-    setChatRecord (state, c) {
-      if (c.target === 'replace') {
-        state.chatRecord[c.name] = c.data
-      } else if (c.target === 'append') {
-        state.chatRecord[c.name].push(c.data)
-      }
-    },
     setContact (state, p) {
       state.contact[p.name] = p.data
     },
@@ -112,7 +113,31 @@ let store = new Vuex.Store({
     },
     setSound (state, i) {
       state.sound = i
+    },
+    initChatRecord (state, c) {
+      state.chatRecord[c.name] = c.data
     }
+  },
+  actions: {
+    setChatRecord (context, c) {
+      const dataType = typeDetection(c.data)
+      if (c.replace) {
+        if (dataType === 'array') {
+          context.state.chatRecord[c.name] = c.data
+        } else if (dataType === 'object') {
+          context.state.chatRecord[c.name] = [c.data]
+        }
+      } else {
+        if (!context.state.chatRecord[c.name]) {
+          context.state.chatRecord[c.name] = []
+        }
+        if (dataType === 'array') {
+          context.state.chatRecord[c.name] = context.state.chatRecord[c.name].concat(c.data)
+        } else if (dataType === 'object') {
+          context.state.chatRecord[c.name].push(c.data)
+        }
+      }
+    },
   },
   getters: {
     getUser: state => state.user,

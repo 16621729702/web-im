@@ -5,7 +5,7 @@
     <span :class="'inlineblock ' + byMe +  ' web-im-messageFormat'">{{ item.format }}</span>
     <div class="clr"></div>
     <div :class="['inlineblock', 'web-im-messageContent', (item.type === 'audio' && item.url === soundHref) ? 'web-im-blink' : '']">
-      <img class="web-im-messageImage" v-if="item.type === 'img'" :src="item.url" />
+      <img class="web-im-messageImage" v-if="item.type === 'img'" :src="item.url" :height="item.width > 200 ? (item.height / item.width * 200) : item.height" />
       <div class="web-im-messageUrl pointer" v-else-if="item.type === 'url'" @click="openNewTab" :data-href="item.href">
         <img :src="item.image" />
         <div class="web-im-urlTitle">{{ item.title }}</div>
@@ -19,7 +19,8 @@
         lng: {{item.location.lng}}<br>
         lat: {{item.location.lat}}
       </div>
-      <TextMessage v-else="item.type === 'text'" :message="item"></TextMessage>
+      <img class="web-im-messageImage" v-else-if="item.type === 'sticker'" :src="sticker.baseUlr.replace('{name}', item.data)" :height="sticker.height" />
+      <TextMessage v-else :message="item"></TextMessage>
     </div>
 </div>
 </template>
@@ -45,11 +46,17 @@ export default {
   },
   data () {
     return {
-      byMe: ''
+      byMe: '',
+      sticker: {
+        width: 80,
+        height: 80,
+        baseUlr: 'https://s.ziyadiaoyu.com/{name}.gif'
+      }
     }
   },
-  created () {
-    this.byMe = this.item.sentByMe ? 'fr' : 'fl'
+  mounted () {
+    let me = this
+    me.byMe = me.item.sentByMe ? 'fr' : 'fl'
   },
   methods: {
     openNewTab (e) {
