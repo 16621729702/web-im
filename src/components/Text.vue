@@ -17,14 +17,14 @@ export default {
   },
   created () {
     let me = this
-    var url = me.message.data.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/i)
+    var text = me.message.data
+    var url = text.match(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/i)
     if (url) {
-      me.text = me.message.data.replace(url[0], '<a class="inlineblock web-im-textHref" target="_blank" href="' + url[0] + '">' + url[0] + '</a>')
-    } else {
-      me.text = me.message.data.replace(/\[[^\x00-\xff]+\]/g, function (str) {
-        return '<img src="' + me.emojiUrl.replace('{name}', emoji[str]) + '" width="30" height="30" class="web-im-emoji" />'
-      })
+      me.text = text.replace(url[0], '<a class="inlineblock web-im-textHref" target="_blank" href="' + url[0] + '">' + url[0] + '</a>')
     }
+    me.text = text.replace(/\[[^\x00-\xff]+\]/g, function (str) {
+      return '<img src="' + me.emojiUrl.replace('{name}', emoji[str]) + '" width="30" height="30" class="web-im-emoji" />'
+    })
   }
 }
 </script>

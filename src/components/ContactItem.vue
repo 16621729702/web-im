@@ -8,6 +8,8 @@
 </template>
 <script>
 import Avatar from '@/components/Avatar'
+import receipt from 'module_path/receipt'
+
 export default {
   name: 'contactuser',
   components: {
@@ -115,6 +117,7 @@ export default {
             })
             me.$store.commit('setConcatStatus', { name: uid, status: true })
             me.$store.commit('setSelected', uid)
+            // me.$store.commit('setConcatUnread', { name: uid, unrea: 0})
           },
           error: function () {
             me.$notify('网络错误，请稍候重试', 'error')
@@ -123,6 +126,7 @@ export default {
       } else {
         me.$store.commit('setConcatStatus', { name: uid, status: true })
         me.$store.commit('setSelected', uid)
+        // me.$store.commit('setConcatUnread', { name: uid, unrea: 0})
       }
     }
   }

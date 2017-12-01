@@ -19,9 +19,7 @@ Vue.use(Vuex)
 
 Vue.prototype.$ajax = ajax
 Vue.prototype.$webIM = webIM
-// Vue.prototype.$lang = Chinese
 Vue.prototype.$cookie = cookieHandler
-Vue.prototype.$notification = notification
 Vue.prototype.$notification = notification
 Vue.prototype.$messageHandler = function (message, type, me) {
   // console.log(message)
@@ -104,6 +102,7 @@ let store = new Vuex.Store({
     },
     setSelected (state, s) {
       state.selected = s
+      state.contact[s].unread = 0
     },
     setConcatStatus (state, c) {
       state.contact[c.name].detail = c.status

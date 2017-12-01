@@ -3,8 +3,8 @@
     <img src='https://s.ziyadiaoyu.com/rel.png' class='logo' />
     <div class='login'>
       <h2 class='tc'>登录</h2>
-      <input class="boxsizing" type='text' placeholder='用户名' maxlength='50' :value="username" data-v="username"  @keyup="inputHandler" />
-      <input class="boxsizing" type='password' placeholder='密码' maxlength='50' :value="pwd" data-v="pwd" @input="inputHandler" />
+      <input class="boxsizing" type='text' placeholder='用户名' maxlength='50' :value="username" data-v="username"  @keyup="inputHandler" @keydown="triggerLogin" />
+      <input class="boxsizing" type='password' placeholder='密码' maxlength='50' :value="pwd" data-v="pwd" @input="inputHandler" @keydown="triggerLogin" />
       <div class='button pointer' @click="ziyaLogin">{{ text }}</div>
     </div>
   </div>
@@ -39,6 +39,11 @@ export default {
     inputHandler: function (e) {
       var target = e.target
       this[target.dataset.v] = target.value
+    },
+    triggerLogin: function (e) {
+      if (e.keyCode === 13) {
+        this.ziyaLogin()
+      }
     },
     ziyaLogin: function () {
       let me = this
