@@ -86,8 +86,8 @@ function f (message, type, notification) {
       name: name,
       data: {
         detail: false,
-        avatar: message.ext.avatar_url,
-        nick: message.ext.nick,
+        avatar: message.ext.avatar,
+        nick: message.ext.nickname,
         unread: message.data.status === 'unread' ? 1 : 0,
         brief: result.brief
       }

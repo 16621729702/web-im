@@ -2,7 +2,6 @@
   <div class="web-im-chatWindow">
     <div class="web-im-contactWindow">
       <ContactItem v-for="(value, key) in contact" :user="value" :key="key" :username="key"></ContactItem>
-      <!-- <div @click="say">fuck</div> -->
     </div>
     <div class="web-im-messageWindow" v-show="selected">
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
@@ -61,15 +60,12 @@
     watch: {
       selectedRecord (n) {
         let me = this
-        // me.$forceUpdate()
         me.$nextTick(() => {
           let all = document.querySelectorAll('.web-im-message')
-          if (all.length > 1) {
-           setTimeout(() => {
-              all[all.length - 1].scrollIntoView(true)
-              all = null
-              // me.contactChaning = false
-            }, 100) 
+          const len = all.length
+          if (len> 1) {
+            all[len - 1].scrollIntoView(false)
+            all = null
           }
         })
       }
@@ -158,7 +154,6 @@
                 }
               }
             })
-            // me.$forceUpdate()
           }
         },
         error: function () {
@@ -167,15 +162,11 @@
       })
     },
     methods: {
-      say () {
-        console.log(this)
-      },
       sendMessage () {
         let me = this
         if (me.messageText) {
           me.messageText = ''
         }
-        console.log(1);
       },
       upHandler (e) {
         let me = this
@@ -184,12 +175,12 @@
         }
       },
       downHandler (e) {
-        e.preventDefault()
         const code = e.keyCode
         let me = this
         if (code === 17) {
           me.keyDown = true
         } else if (code === 13) {
+          e.preventDefault()
           if (me.operationModel === '1') {
             if (me.keyDown) {
               me.messageText += '\n'

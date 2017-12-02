@@ -4,7 +4,7 @@
      <Avatar :src="user.avatar" :title="user.nick"></Avatar>
      <div class="web-im-menuList tc">
        <div :class="['icon', 'icon-liaotianyoudian', 'pointer', selectedMenu === 'chat' ? 'selected' : '']" title="聊天" data-menu="chat" @click="selectMenu"></div>
-       <div :class="['icon', 'icon-dingdan', 'pointer', selectedMenu === 'order' ? 'selected' : '']" title="我的订单" data-menu="order" @click="selectMenu"></div>
+       <!-- <div :class="['icon', 'icon-dingdan', 'pointer', selectedMenu === 'order' ? 'selected' : '']" title="我的订单" data-menu="order" @click="selectMenu"></div> -->
      </div>
      <div class="icon icon-dianyuan web-im-logout pointer" title="退出" @click="logout"></div>
    </div>

@@ -18,7 +18,7 @@ export default {
   mounted () {
     let me = this
     let text = me.message.data
-    text = text.replace(/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/i, function (item) {
+    text = text.replace(/https?:\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/i, function (item) {
       return '<a class="inlineblock web-im-textHref" target="_blank" href="' + item + '">' + item + '</a>'
     })
     me.text = text.replace(/\[[^\x00-\xff]+\]/g, function (str) {
