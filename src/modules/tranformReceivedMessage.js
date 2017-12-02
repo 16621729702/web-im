@@ -1,3 +1,5 @@
+import notify from 'module_path/notification'
+
 let curUser = null
 function f (message, type, notification) {
   let me = this
@@ -7,6 +9,9 @@ function f (message, type, notification) {
   }
   let name = message.from
   let result = {}
+  let notifyBody = {
+    title: message.ext.nickname
+  }
   if (message.from === curUser.username) {
     result.sentByMe = true
     name = message.to
@@ -72,6 +77,7 @@ function f (message, type, notification) {
       result.data.secret = message.secret
       result.data.filename = message.filename
       result.data.accessToken = message.accessToken
+      notifyBody.icon = message.url
       break
     case 'url':
       result.brief = '[ 分享链接 ]'
@@ -79,6 +85,7 @@ function f (message, type, notification) {
       result.data.href = message.ext.webChatHref
       result.data.image = message.ext.webChatImage
       result.data.title = message.ext.webChatTitle
+      notifyBody.icon = message.ext.webChatImage
       break
   }
   if (!me.$store.getters.getContact[name]) {
@@ -104,6 +111,10 @@ function f (message, type, notification) {
       name: name,
       brief: result.brief
     })
+  }
+  if (notification) {
+    notifyBody.body = result.brief
+    notify(notifyBody)
   }
   me.$store.dispatch('setChatRecord', {
     replace: false,

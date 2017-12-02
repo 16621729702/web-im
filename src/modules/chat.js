@@ -20,10 +20,7 @@ conn.listen({
     window.app.$soundNotify()
     window.app.$tranformReceivedMessage(message, 'txt', true)
   },
-  onEmojiMessage: function (message) {
-    // window.app.$soundNotify()
-    // window.app.$tranformReceivedMessage(message, 'emoji', true)
-  },
+  onEmojiMessage: function (message) {},
   onPictureMessage: function (message) {
     window.app.$soundNotify()
     window.app.$tranformReceivedMessage(message, 'img', true)
