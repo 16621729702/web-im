@@ -5,7 +5,7 @@
   left: 61px;
   bottom: 0;
   height: 100%;
-  overflow: hidden;
+  /*overflow: hidden;*/
   .web-im-contactWindow {
     width: 220px;
     height: 100%;
@@ -64,14 +64,75 @@
       margin: 5px 10px 0;
       border: 1px solid #dedede;
     }
-    .web-im-send{
+    .web-im-send, .web-im-operationModel{
       margin-top: 8px;
-      margin-right: 10px;
+      background-color: #039bfb;
+      height: 24px;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    .web-im-send{
       line-height: 24px;
       width: 100px;
-      border-radius: 2px;
-      background-color: #039bfb;
+      border-top-left-radius: 2px;
+      border-bottom-left-radius: 2px;
       color: #fff;
+    }
+    .web-im-operationModel {
+      position: relative;
+      margin-right: 10px;
+      width: 20px;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      &:before {
+        content: '';
+        display: block;
+        height: 60%;
+        width: 1px;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translate(0, -50%);
+        background-color: rgba(255, 255, 255, .5);
+      }
+      &:after {
+        content: '';
+        display: block;
+        width: 0;
+        height: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-top: 4px solid #fff;
+        border-right: 4px solid transparent;
+        border-bottom: none;
+        border-left: 4px solid transparent;
+      }
+    }
+    .web-im-operationModels {
+      position: absolute;
+      top: 110px;
+      left: 99%;
+      line-height: 26px;
+      box-shadow: 0 0 2px 2px #ccc; 
+      white-space: nowrap;
+      background-color: #fff;
+      font-size: 12px;
+      color: #333;
+      & > div {
+        padding: 0 8px 0 22px;
+        &:hover {
+          background-color: #e5e5e5;
+        }
+        &.selected {
+          background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAQCAYAAAAMJL+VAAAB7UlEQVQ4T7WTzWsUQRDF3+ueySb4J/jPSBITJOIHEVQQE6I7Y0QDgt5yEHJTEBGD7syaS5RgQMhJRBA8ePHiQVBQ/ACFgKKIATG7PV0lszuGaNzshqx96oau3yveqyL+w7FJNg7qrAAP2G2+SeqnSM4CMKpY6aqASf0UIVcB5NyaFz/aNQGTugsELjUcUfz0igOIw4ddETCJmyYx02TjhyDYizIf5+9tC5iqm6FiugFXrIhiBHH45He2NIm7AuiwGE7hZPhoK6GbqrtMxflm5/wmInsQ9zxdz6BN3SqAUsM38hDKwf1OREyaXSP0bAH/ItYOY4LP/q6lSeuTBK/nY5UnD5EjPi4ttRRRpan6m4RGheefBMEQynz+r5pGBjapl0HeyK8AHFSO+ai0uKHgohqz080RHCvgy2KD3Zjgy1YNrYVs0+w4oLcABFBkAMd9FNxZK1xUa767eYJHm3D9KCqDiHpfb2bpH1Nk0+wwVG+DCAB4qEY+6plDRUMyWzDEaOH5e3HZIE73vmuX14YxtUntIGjuAggBiIqeozUDUN1XwN+IuAHEfR/awVvvQWV1xBp7rzFd645CX4lx/TixY7kT+OaLVnFDllgC0VcE+kKyoB+T/NwpvP0mp7rLIFsg8NbXgv04w69bged/fwEse725XFW8FQAAAABJRU5ErkJggg==);
+          background-repeat: no-repeat;
+          background-size: auto 30%;
+          background-position: 2% center;
+        }
+      }
     }
   }
 }

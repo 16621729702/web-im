@@ -2,12 +2,12 @@
   <div class="web-im-chatWindow">
     <div class="web-im-contactWindow">
       <ContactItem v-for="(value, key) in contact" :user="value" :key="key" :username="key"></ContactItem>
-      <div @click="say">fuck</div>
+      <!-- <div @click="say">fuck</div> -->
     </div>
     <div class="web-im-messageWindow" v-show="selected">
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
       <div class="web-im-messages clr">
-        <Messages v-if="selectedRecord" v-for="(item, index) in selectedRecord" :item="item" :key="index"></Messages>
+        <Messages v-if="selected && chatRecord" v-for="(item, index) in chatRecord[selected]" :item="item" :key="index"></Messages>
       </div>
     </div>
     <div class="web-im-inputWindow" v-show="selected">
@@ -15,7 +15,12 @@
         <span class="inlineblock icon icon-tupian pointer"></span>
       </div>
       <textarea class="boxsizing web-im-textarea" v-model="messageText" placeholder="文字消息..." @keydown="downHandler" @keyup="upHandler"></textarea>
+      <div class="boxsizing fr web-im-operationModel pointer" @click="showModels"></div>
       <div class="fr web-im-send tc pointer" @click="sendMessage">发送</div>
+      <div class="boxsizing fr web-im-operationModels pointer" v-show="showModel" @mouseleave="hideModels" @click="selectModel">
+        <div data-model="1" :class="[operationModel === '1' ? 'selected' : '']">enter发送消息，ctrl + enter换行</div>
+        <div data-model="2" :class="[operationModel === '2' ? 'selected' : '']">ctrl + enter发送消息，enter换行</div>
+      </div>
     </div>
   </div>
 </template>
@@ -33,7 +38,9 @@
     data () {
       return {
         messageText: '',
-        keyDown: false
+        keyDown: false,
+        operationModel: '1',
+        showModel: false
       }
     },
     computed: {
@@ -44,20 +51,20 @@
         return this.$store.getters.getContact
       },
       chatRecord () {
-        return Object.assign({}, this.$store.getters.getChatRecord)
+        return this.$store.getters.getChatRecord
       },
-      selectedRecord () {
-        let me = this
-        return me.chatRecord[me.selected]
-      }
+      // selectedRecord () {
+      //   let me = this
+      //   return me.chatRecord[me.selected]
+      // }
     },
     watch: {
       chatRecord (n) {
         console.log('fuck', n)
       },
-      selectedRecord (n) {
+      selected (n) {
         let me = this
-        console.log(n)
+        // console.log(n)
         me.$forceUpdate()
         me.$nextTick(() => {
           let all = document.querySelectorAll('.web-im-message')
@@ -163,10 +170,6 @@
       })
     },
     methods: {
-      say () {
-        console.log(Object.assign({}, this.$store.getters.getChatRecord))
-        console.log(this)
-      },
       sendMessage () {
         let me = this
         if (me.messageText) {
@@ -187,13 +190,34 @@
         if (code === 17) {
           me.keyDown = true
         } else if (code === 13) {
-          if (me.keyDown) {
-            me.messageText += '\n'
+          if (me.operationModel === '1') {
+            if (me.keyDown) {
+              me.messageText += '\n'
+            } else {
+              me.sendMessage()
+            }
           } else {
-            me.sendMessage()
+            if (me.keyDown) {
+              me.sendMessage()
+            } else {
+              me.messageText += '\n'
+            }
           }
         }
       },
+      showModels () {
+        this.showModel = true
+      },
+      hideModels () {
+        this.showModel = false
+      },
+      selectModel (e) {
+        var dataset = e.target.dataset;
+        if (dataset.model) {
+          this.operationModel = dataset.model;
+          this.hideModels()
+        }
+      }
     }
   }
 </script>
