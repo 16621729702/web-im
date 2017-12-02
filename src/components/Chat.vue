@@ -17,7 +17,7 @@
       <textarea class="boxsizing web-im-textarea" v-model="messageText" placeholder="文字消息..." @keydown="downHandler" @keyup="upHandler"></textarea>
       <div class="boxsizing fr web-im-operationModel pointer" @click="showModels"></div>
       <div class="fr web-im-send tc pointer" @click="sendMessage">发送</div>
-      <div class="boxsizing fr web-im-operationModels pointer" v-show="showModel" @mouseleave="hideModels" @click="selectModel">
+      <div class="boxsizing fr web-im-operationModels pointer" v-show="showModel" @click="selectModel">
         <div data-model="1" :class="[operationModel === '1' ? 'selected' : '']">enter发送消息，ctrl + enter换行</div>
         <div data-model="2" :class="[operationModel === '2' ? 'selected' : '']">ctrl + enter发送消息，enter换行</div>
       </div>
@@ -76,6 +76,7 @@
     },
     created () {
       let me = this
+      document.addEventListener('click', function () { me.showModel = false }, false);
       me.$ajax({
         url: 'https://www.ziyadiaoyu.com/biz_im_list?token=' + me.$cookie.analysisCookie().token + '&random=' + (new Date()).getTime(),
         type: 'get',
@@ -204,17 +205,15 @@
           }
         }
       },
-      showModels () {
+      showModels (e) {
+        e.stopPropagation()
         this.showModel = true
       },
-      hideModels () {
-        this.showModel = false
-      },
       selectModel (e) {
-        var dataset = e.target.dataset;
+        let me = this
+        let dataset = e.target.dataset;
         if (dataset.model) {
-          this.operationModel = dataset.model;
-          this.hideModels()
+          me.operationModel = dataset.model
         }
       }
     }
