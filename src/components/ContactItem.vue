@@ -55,6 +55,7 @@ export default {
               name: me.username,
               data: []
             })
+            let dataArray = []
             json.forEach((item) => {
               if (!item.from) { return }
               let payload = item.new_payload.bodies[0]
@@ -109,10 +110,12 @@ export default {
                 return
               }
               message = me.$tranformHistoryMessage(message, finalType, me.curUser)
-              me.$store.dispatch('setChatRecord', {
-                name: me.username,
-                data: message.data
-              })
+              dataArray.push(message.data)
+            })
+            me.$store.dispatch('setChatRecord', {
+              replace: true,
+              name: me.username,
+              data: dataArray
             })
             me.successhandler(uid)
           },

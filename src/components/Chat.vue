@@ -2,6 +2,7 @@
   <div class="web-im-chatWindow">
     <div class="web-im-contactWindow">
       <ContactItem v-for="(value, key) in contact" :user="value" :key="key" :username="key"></ContactItem>
+      <div @click="say">fuck</div>
     </div>
     <div class="web-im-messageWindow" v-show="selected">
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
@@ -43,7 +44,7 @@
         return this.$store.getters.getContact
       },
       chatRecord () {
-        return this.$store.getters.getChatRecord
+        return Object.assign({}, this.$store.getters.getChatRecord)
       },
       selectedRecord () {
         let me = this
@@ -51,16 +52,22 @@
       }
     },
     watch: {
-      selectedRecord () {
+      chatRecord (n) {
+        console.log('fuck', n)
+      },
+      selectedRecord (n) {
         let me = this
+        console.log(n)
         me.$forceUpdate()
         me.$nextTick(() => {
           let all = document.querySelectorAll('.web-im-message')
-          setTimeout(() => {
-            all[all.length - 1].scrollIntoView(true)
-            all = null
-            // me.contactChaning = false
-          }, 50)
+          if (all.length > 1) {
+           setTimeout(() => {
+              all[all.length - 1].scrollIntoView(true)
+              all = null
+              // me.contactChaning = false
+            }, 50) 
+          }
         })
       }
     },
@@ -156,6 +163,10 @@
       })
     },
     methods: {
+      say () {
+        console.log(Object.assign({}, this.$store.getters.getChatRecord))
+        console.log(this)
+      },
       sendMessage () {
         let me = this
         if (me.messageText) {

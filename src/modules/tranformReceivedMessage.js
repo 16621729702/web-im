@@ -1,13 +1,18 @@
 let curUser = null
 function f (message, type, notification) {
-  console.log(message)
   let me = this
   let finalType = type
   if (!curUser) {
     curUser = me.$store.getters.getUser
   }
+  let name = message.from
   let result = {}
-  result.sentByMe = message.from === curUser.username
+  if (message.from === curUser.username) {
+    result.sentByMe = true
+    name = message.to
+  } else {
+    result.sentByMe = false
+  }
   if (type === 'txt') {
     if (message.ext) {
       if (message.ext.isWebURL) {
@@ -20,7 +25,7 @@ function f (message, type, notification) {
     finalType = 'loc'
   }
   result.data = {
-    sentByMe: message.from === curUser.username,
+    sentByMe: result.sentByMe,
     type: finalType,
     status: message.status
   }
@@ -76,9 +81,9 @@ function f (message, type, notification) {
       result.data.title = message.ext.webChatTitle
       break
   }
-  if (!me.$store.getters.getContact[message.ext.nickname]) {
+  if (!me.$store.getters.getContact[name]) {
     me.$store.commit('setContact', {
-      name: message.ext.nickname,
+      name: name,
       data: {
         detail: false,
         avatar: message.ext.avatar_url,
@@ -87,10 +92,22 @@ function f (message, type, notification) {
         brief: result.brief
       }
     })
+  } else {
+    if (name !== me.$store.getters.getSelected){
+      me.$store.commit('setConcatUnread', {
+        append: true,
+        name: name,
+        unread: 1
+      })
+    }
+    me.$store.commit('setConcatBrief', {
+      name: name,
+      brief: result.brief
+    })
   }
   me.$store.dispatch('setChatRecord', {
     replace: false,
-    name: message.ext.nickname,
+    name: name,
     data: [result.data]
   })
 }

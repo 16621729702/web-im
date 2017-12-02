@@ -38,7 +38,10 @@ let store = new Vuex.Store({
       state.user = u
     },
     setContact (state, p) {
-      state.contact[p.name] = p.data
+      let obj = {}
+      obj[p.name] = p.data
+      state.contact = Object.assign({}, state.contact, obj)
+      // state.contact[p.name] = p.data
     },
     setSelected (state, s) {
       state.selected = s
@@ -48,7 +51,14 @@ let store = new Vuex.Store({
       state.contact[c.name].detail = c.status
     },
     setConcatUnread (state, c) {
-      state.contact[c.name].unread = c.unread
+      if (c.append) {
+        state.contact[c.name].unread += c.unread
+      } else {
+        state.contact[c.name].unread = c.unread
+      }
+    },
+    setConcatBrief (state, c) {
+      state.contact[c.name].brief = c.brief
     },
     setSound (state, i) {
       state.sound = i
@@ -71,9 +81,9 @@ let store = new Vuex.Store({
           context.state.chatRecord[c.name] = []
         }
         if (dataType === 'array') {
-          context.state.chatRecord[c.name] = context.state.chatRecord[c.name].concat(c.data)
+          context.state.chatRecord[c.name] = ([]).concat(context.state.chatRecord[c.name], c.data)
         } else if (dataType === 'object') {
-          context.state.chatRecord[c.name].push(c.data)
+          context.state.chatRecord[c.name] = ([]).concat(context.state.chatRecord[c.name], [c.data])
         }
       }
     },
