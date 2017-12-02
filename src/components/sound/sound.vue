@@ -1,5 +1,5 @@
 <template>
-  <audio class="web-im-sound" src="" ref="sound"></audio>
+  <audio class="web-im-sound" src="" ref="sound" @ended="end"></audio>
 </template>
 
 <script>
@@ -8,13 +8,18 @@ export default {
   methods: {
     load (str) {
       let me = this
+      me.$refs.sound.src = str
       if (str) {
-        me.$refs.sound.src = str
         me.$refs.sound.play()
-      } else {
-        me.$refs.sound.pause()
       }
       window.app.$store.commit('setSound', str)
+    },
+    end (e) {
+      let me = this
+      if (e.target) {
+        me.$refs.sound.src = ''
+        window.app.$store.commit('setSound', '')
+      }
     }
   }
 }

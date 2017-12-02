@@ -61,7 +61,7 @@
     watch: {
       selectedRecord (n) {
         let me = this
-        me.$forceUpdate()
+        // me.$forceUpdate()
         me.$nextTick(() => {
           let all = document.querySelectorAll('.web-im-message')
           if (all.length > 1) {
@@ -69,7 +69,7 @@
               all[all.length - 1].scrollIntoView(true)
               all = null
               // me.contactChaning = false
-            }, 50) 
+            }, 100) 
           }
         })
       }
@@ -157,7 +157,7 @@
                 }
               }
             })
-            me.$forceUpdate()
+            // me.$forceUpdate()
           }
         },
         error: function () {

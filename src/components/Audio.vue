@@ -12,12 +12,30 @@ export default {
   },
   methods: {
     playAudio (e) {
-      let t = e.currentTarget
-      let src = ''
-      if (!t.parentNode.classList.contains('web-im-blink')) {
-        src = t.dataset.src
+      let me = this
+      let ele = e.currentTarget
+      let src = ele.dataset.src
+      if (!ele.parentNode.classList.contains('web-im-blink')) {
+        if (src.indexOf('.mp3') > 0) {
+          me.$sound(src)
+        } else {
+          let options = { url: src };
+          options.onFileDownloadComplete = function ( response ) { 
+            const href = WebIM.utils.parseDownloadResponse.call(me.$webIM, response);
+            me.message.url = href
+            me.$sound(href)
+          }
+          options.onFileDownloadError = function () {
+            me.$notify('音频下载失败，请稍后再试', 'error')
+          }
+          options.headers = { 
+            'Accept': 'audio/mp3'
+          }
+          window.WebIM.utils.download.call(me.$webIM, options);
+        }
+      } else {
+        me.$sound('')
       }
-      this.$sound(src)
     }
   }
 }

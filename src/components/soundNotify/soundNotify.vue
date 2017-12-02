@@ -7,7 +7,7 @@ export default {
   name: 'web-im-soundNotify',
   data () {
     return {
-      soundUrl: 'https://s.ziyadiaoyu.com/webim-sound.' + (window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ? 'ogg' : 'mp3')
+      soundUrl: 'http://7xtho9.com1.z0.glb.clouddn.com/webim-sound.mp3'
     }
   },
   methods: {
