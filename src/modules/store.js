@@ -14,12 +14,12 @@ let store = new Vuex.Store({
   },
   mutations: {
     setUser (state, u) {
-      state.user = u
+      Vue.set(state, 'user', u)
     },
     setContact (state, p) {
       let obj = {}
       obj[p.name] = p.data
-      state.contact = Object.assign({}, state.contact, obj)
+      Vue.set(state.contact, p.name, p.data)
     },
     setSelected (state, s) {
       state.selected = s
@@ -50,13 +50,13 @@ let store = new Vuex.Store({
       const dataType = typeDetection(c.data)
       if (c.replace) {
         if (dataType === 'array') {
-          context.state.chatRecord[c.name] = c.data
+          Vue.set(context.state.chatRecord, c.name, c.data)
         } else if (dataType === 'object') {
-          context.state.chatRecord[c.name] = [c.data]
+          Vue.set(context.state.chatRecord, c.name, [c.data])
         }
       } else {
         if (!context.state.chatRecord[c.name]) {
-          context.state.chatRecord[c.name] = []
+          Vue.set(context.state.chatRecord, c.name, [])
         }
         if (dataType === 'array') {
           context.state.chatRecord[c.name] = ([]).concat(context.state.chatRecord[c.name], c.data)

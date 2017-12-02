@@ -7,7 +7,7 @@
     <div class="web-im-messageWindow" v-show="selected">
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
       <div class="web-im-messages clr">
-        <Messages v-if="selected && chatRecord" v-for="(item, index) in chatRecord[selected]" :item="item" :key="index"></Messages>
+        <Messages v-if="selectedRecord" v-for="(item, index) in selectedRecord" :item="item" :key="index"></Messages>
       </div>
     </div>
     <div class="web-im-inputWindow" v-show="selected">
@@ -53,18 +53,14 @@
       chatRecord () {
         return this.$store.getters.getChatRecord
       },
-      // selectedRecord () {
-      //   let me = this
-      //   return me.chatRecord[me.selected]
-      // }
+      selectedRecord () {
+        let me = this
+        return me.chatRecord[me.selected]
+      }
     },
     watch: {
-      chatRecord (n) {
-        console.log('fuck', n)
-      },
-      selected (n) {
+      selectedRecord (n) {
         let me = this
-        // console.log(n)
         me.$forceUpdate()
         me.$nextTick(() => {
           let all = document.querySelectorAll('.web-im-message')
@@ -170,6 +166,9 @@
       })
     },
     methods: {
+      say () {
+        console.log(this)
+      },
       sendMessage () {
         let me = this
         if (me.messageText) {
