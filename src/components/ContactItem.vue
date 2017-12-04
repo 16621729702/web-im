@@ -40,6 +40,7 @@ export default {
       if (!me.requesting && me.$refs.contactItem.classList.contains('selected')) {
         return
       }
+      me.$store.commit('setLoadingMessage', true)
       me.requesting = true
       me.$sound('')
       let uid = e.currentTarget.dataset.uid
@@ -132,6 +133,7 @@ export default {
       let me = this
       me.$store.commit('setConcatStatus', { name: uid, status: true })
       me.$store.commit('setSelected', uid)
+      me.$store.commit('setLoadingMessage', false)
       receipt(me.curUser.username, uid)
     }
   }

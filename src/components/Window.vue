@@ -59,9 +59,9 @@
         me.$cookie.setCookie('token', '', -1)
         me.$cookie.setCookie('pd', '', -1)
         me.$store.commit('setUser', {})
-        me.$webIM.close()
         me.$notify('已退出', 'success')
         me.$router.replace('/login')
+        me.$webIM.close()
       }
     }
   }

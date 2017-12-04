@@ -14,10 +14,9 @@ conn.listen({
     console.log('opened')        
   },
   onClosed: function (message) {
-    console.log(message)
+    console.log('close')
   },
   onTextMessage: function (message) {
-    console.log(message)
     window.app.$soundNotify()
     window.app.$tranformReceivedMessage(message, 'txt', true)
   },
@@ -60,10 +59,34 @@ conn.listen({
     console.log('online')
   },
   onOffline: function () {
-    window.location.replace('/')
+    window.app.$cookie.setCookie('username', '', -1)
+    window.app.$cookie.setCookie('nick', '', -1)
+    window.app.$cookie.setCookie('avatar', '', -1)
+    window.app.$cookie.setCookie('token', '', -1)
+    window.app.$cookie.setCookie('pd', '', -1)
+    window.app.$store.commit('setUser', {})
+    window.app.$notify('已下线', 'error')
+    window.app.$router.replace('/login')
+    window.app.$webIM.close()
   },
   onError: function (message) {
-    console.log(message, 'error')
+    if (message.type === 8) {
+      window.app.$notify('帐号在其他设备登录，已下线', 'error')
+    } else if (message.type === 7 || message.type === 32) {
+      window.app.$notify('网络中断，已下线', 'error')
+    } else if (message.type === 16) {
+      window.app.$notify('服务端关闭，已下线', 'error')
+    } else if (message.type === 34) {
+      window.app.$notify('同一浏览器打开标签页超过上限', 'error')
+    }
+    window.app.$cookie.setCookie('username', '', -1)
+    window.app.$cookie.setCookie('nick', '', -1)
+    window.app.$cookie.setCookie('avatar', '', -1)
+    window.app.$cookie.setCookie('token', '', -1)
+    window.app.$cookie.setCookie('pd', '', -1)
+    window.app.$store.commit('setUser', {})
+    window.app.$router.replace('/login')
+    window.app.$webIM.close()
   },
   onReceivedMessage: function (message) {}, //收到消息送达服务器回执
   onDeliveredMessage: function (message) {}, //收到消息送达客户端回执

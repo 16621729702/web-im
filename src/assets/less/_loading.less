@@ -1,0 +1,32 @@
+.web-im-loading {
+  padding-top: 20px;
+  .inlineblock {
+    margin: 0 3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #039bfb;
+    vertical-align: middle;
+    animation-name: scaleframe;
+    animation-duration: 0.6s;
+    animation-iteration-count: infinite;
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes scaleframe {
+  0% {
+    transform: scale(2);
+  }
+  80% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

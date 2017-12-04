@@ -1,13 +1,14 @@
 <template>
   <div class="web-im-chatWindow">
     <div class="web-im-contactWindow">
-      <!-- <ContactItem v-for="(value, key) in contact" :user="value" :key="key" :username="key"></ContactItem> -->
+      <Loading v-show="loading"></Loading>
       <ContactItem v-for="item in contactArray" :user="contact[item.u]" :key="item.u" :username="item.u"></ContactItem>
     </div>
     <div class="web-im-messageWindow" v-show="selected">
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
       <div class="web-im-messages clr">
-        <Messages v-if="selectedRecord" v-for="(item, index) in selectedRecord" :item="item" :key="index"></Messages>
+        <Loading v-show="loadingMessage"></Loading>
+        <Messages v-show="!loadingMessage" v-if="selectedRecord" v-for="(item, index) in selectedRecord" :item="item" :key="index"></Messages>
       </div>
     </div>
     <div class="web-im-inputWindow" v-show="selected">
@@ -32,14 +33,17 @@
 
 <script>
   import ContactItem from '@/components/ContactItem'
+  import Loading from '@/components/Loading'
   import Messages from '@/components/Messages'
   import emoji from 'module_path/emoji'
+  import upload from 'module_path/uploadToQiniu'
 
   export default {
     name: 'Chat',
     components: {
       ContactItem: ContactItem,
-      Messages: Messages
+      Messages: Messages,
+      Loading: Loading
     },
     data () {
       return {
@@ -50,10 +54,14 @@
         showModel: false,
         showEmoji: false,
         emoji: emoji,
-        emojiUrl: 'https://s.ziyadiaoyu.com/{name}.png'
+        emojiUrl: 'https://s.ziyadiaoyu.com/{name}.png',
+        loading: true
       }
     },
     computed: {
+      loadingMessage () {
+        return this.$store.getters.getLoadingMessage
+      },
       selected () {
         return this.$store.getters.getSelected
       },
@@ -175,6 +183,7 @@
               }
             })
           }
+          me.loading = false
         },
         error: function () {
           me.$notify('网络错误，请稍后再试', 'error')
@@ -184,39 +193,78 @@
     methods: {
       sendImageMessage () {
         let me = this
+        let files = me.$refs.file.files
+        const length = files.length
+        let i = 0
+        for (; i < length; i++) {
+          me.uploadSingleImage(files[i])
+        }
+      },
+      uploadSingleImage (fileObject) {
+        let me = this
+        let file = {
+          data: fileObject,
+          filename: fileObject.name,
+          filetype: fileObject.type.split('/')[1],
+          url: window.URL.createObjectURL(fileObject)
+        }
         const id = me.$webIM.getUniqueId()
         let msg = new WebIM.message('img', id)
-        let file = WebIM.utils.getFileUrl(me.$refs.file)
-        console.log(file, me.$refs.file.files)
-        return
-        const allowType = {
-            'jpg': true,
-            'gif': true,
-            'png': true,
-            'jpeg': true,
-            'raw': true
-        }
-        if (file.filetype.toLowerCase() in allowType) {
-            var option = {
-                apiUrl: WebIM.config.apiURL,
-                file: file,
-                to: 'username',                       // 接收消息对象
-                roomType: false,
-                chatType: 'singleChat',
-                onFileUploadError: function () {      // 消息上传失败
-                    console.log('onFileUploadError');
-                },
-                onFileUploadComplete: function () {   // 消息上传成功
-                    console.log('onFileUploadComplete');
-                },
-                success: function () {                // 消息发送成功
-                    console.log('Success');
-                },
-                flashUpload: WebIM.flashUpload
-            };
+        let reader = new FileReader()
+        reader.onload = (e) => {
+          let img = document.createElement('img')
+          img.src = e.target.result
+          img.onload = () => {
+            let option = {
+              apiUrl: WebIM.config.apiURL,
+              file: file,
+              to: me.selected,
+              width: img.width,
+              height: img.height,
+              roomType: false,
+              chatType: 'singleChat',
+              onFileUploadError: function () {
+                me.$notify('图片上传失败', 'error')
+              },
+              success: function () {
+                const now = new Date()
+                let message = {
+                  accessToken: me.user.token,
+                  created: now.getTime(),
+                  error: false,
+                  secret: me.user.secret,
+                  filename: file.filename,
+                  url: img.src,
+                  height: option.height,
+                  width: option.width,
+                  data: me.messageText,
+                  id: id,
+                  sentByMe: true,
+                  status: '',
+                  type: "chat",
+                  from: me.user.username,
+                  to: me.selected,
+                  ext: {
+                    avatar: me.user.avatar,
+                    nickname:  me.user.nick
+                  }
+                }
+                console.log()
+                message = me.$tranformHistoryMessage(message, 'img', me.user)
+                me.$store.dispatch('setChatRecord', {
+                  name: me.selected,
+                  data: [message.data],
+                  created: now.getTime()
+                })
+                me.$refs.file.value = ''
+              },
+              flashUpload: WebIM.flashUpload
+            }
             msg.set(option);
-            conn.send(msg.body);
+            me.$webIM.send(msg.body)
+          }
         }
+        reader.readAsDataURL(file.data)
       },
       sendTextMessage () {
         let me = this
@@ -228,7 +276,6 @@
               to: me.selected,
               roomType: false,
               success: function (id, serverMsgId) {
-                console.log(id, serverMsgId)
                 const now = new Date()
                 let message = {
                   error: false,
@@ -254,7 +301,7 @@
                 me.messageText = ''
               },
               fail: function (e) {
-                console.log(e, "Send private text error")
+                me.$notify('消息发送失败', 'error')
               }
           });
           msg.body.chatType = 'singleChat';

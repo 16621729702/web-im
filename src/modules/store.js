@@ -11,7 +11,8 @@ let store = new Vuex.Store({
     user: {},
     selected: '',
     sound: '',
-    contactArray: []
+    contactArray: [],
+    loadingMessage: true
   },
   mutations: {
     setUser (state, u) {
@@ -28,6 +29,9 @@ let store = new Vuex.Store({
     },
     setConcatStatus (state, c) {
       state.contact[c.name].detail = c.status
+    },
+    setLoadingMessage (state, b) {
+      state.loadingMessage = b
     },
     setConcatUnread (state, c) {
       if (c.append) {
@@ -86,7 +90,8 @@ let store = new Vuex.Store({
     getContact: state => state.contact,
     getSelected: state => state.selected,
     getSound: state => state.sound,
-    getContactArray: state => state.contactArray
+    getContactArray: state => state.contactArray,
+    getLoadingMessage: state => state.loadingMessage
   }
 })
 export default store
