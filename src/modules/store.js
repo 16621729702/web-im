@@ -82,7 +82,7 @@ let store = new Vuex.Store({
           context.state.chatRecord[c.name] = ([]).concat(context.state.chatRecord[c.name], [c.data])
         }
       }
-    },
+    }
   },
   getters: {
     getUser: state => state.user,

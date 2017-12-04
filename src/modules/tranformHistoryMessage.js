@@ -1,6 +1,5 @@
 function f (message, type, me) {
   let result = {
-    lasted:  message.created,
     sentByMe: message.from === me.username,
     created: message.created
   }

@@ -36,7 +36,7 @@
   import Loading from '@/components/Loading'
   import Messages from '@/components/Messages'
   import emoji from 'module_path/emoji'
-  import upload from 'module_path/uploadToQiniu'
+  import model from 'module_path/operationModel'
 
   export default {
     name: 'Chat',
@@ -50,7 +50,7 @@
         reg: /[^\u4e00-\u9fa5]/g,
         messageText: '',
         keyDown: false,
-        operationModel: '1',
+        operationModel: model.read('operationModel') || '1',
         showModel: false,
         showEmoji: false,
         emoji: emoji,
@@ -76,7 +76,7 @@
         return this.$store.getters.getChatRecord
       },
       user () {
-       return this.$store.getters.getUser
+        return this.$store.getters.getUser
       },
       selectedRecord () {
         let me = this
@@ -210,14 +210,14 @@
           url: window.URL.createObjectURL(fileObject)
         }
         const id = me.$webIM.getUniqueId()
-        let msg = new WebIM.message('img', id)
+        let msg = new window.WebIM.message('img', id)
         let reader = new FileReader()
         reader.onload = (e) => {
           let img = document.createElement('img')
           img.src = e.target.result
           img.onload = () => {
             let option = {
-              apiUrl: WebIM.config.apiURL,
+              apiUrl: window.WebIM.config.apiURL,
               file: file,
               to: me.selected,
               width: img.width,
@@ -242,15 +242,14 @@
                   id: id,
                   sentByMe: true,
                   status: '',
-                  type: "chat",
+                  type: 'chat',
                   from: me.user.username,
                   to: me.selected,
                   ext: {
                     avatar: me.user.avatar,
-                    nickname:  me.user.nick
+                    nickname: me.user.nick
                   }
                 }
-                console.log()
                 message = me.$tranformHistoryMessage(message, 'img', me.user)
                 me.$store.dispatch('setChatRecord', {
                   name: me.selected,
@@ -259,9 +258,9 @@
                 })
                 me.$refs.file.value = ''
               },
-              flashUpload: WebIM.flashUpload
+              flashUpload: window.WebIM.flashUpload
             }
-            msg.set(option);
+            msg.set(option)
             me.$webIM.send(msg.body)
           }
         }
@@ -272,44 +271,44 @@
         if (me.messageText && !me.sendingText) {
           me.sendingText = true
           const id = me.$webIM.getUniqueId()
-          let msg = new WebIM.message('txt', id)
+          let msg = new window.WebIM.message('txt', id)
           msg.set({
-              msg: me.messageText,
-              to: me.selected,
-              roomType: false,
-              success: function (id, serverMsgId) {
-                const now = new Date()
-                let message = {
-                  error: false,
-                  data: me.messageText,  
-                  id: id,
-                  created: now.getTime(),
-                  sentByMe: true,
-                  status: '',
-                  type: "chat",
-                  from: me.user.username,
-                  to: me.selected,
-                  ext: {
-                    avatar: me.user.avatar,
-                    nickname:  me.user.nick
-                  }
+            msg: me.messageText,
+            to: me.selected,
+            roomType: false,
+            success: function (id, serverMsgId) {
+              const now = new Date()
+              let message = {
+                error: false,
+                data: me.messageText,
+                id: id,
+                created: now.getTime(),
+                sentByMe: true,
+                status: '',
+                type: 'chat',
+                from: me.user.username,
+                to: me.selected,
+                ext: {
+                  avatar: me.user.avatar,
+                  nickname: me.user.nick
                 }
-                message = me.$tranformHistoryMessage(message, 'txt', me.user)
-                me.$store.dispatch('setChatRecord', {
-                  name: me.selected,
-                  data: [message.data],
-                  created: now.getTime()
-                })
-                me.messageText = ''
-                me.sendingText = false
-              },
-              fail: function (e) {
-                me.$notify('消息发送失败', 'error')
-                me.sendingText = false
               }
-          });
-          msg.body.chatType = 'singleChat';
-          me.$webIM.send(msg.body);
+              message = me.$tranformHistoryMessage(message, 'txt', me.user)
+              me.$store.dispatch('setChatRecord', {
+                name: me.selected,
+                data: [message.data],
+                created: now.getTime()
+              })
+              me.messageText = ''
+              me.sendingText = false
+            },
+            fail: function (e) {
+              me.$notify('消息发送失败', 'error')
+              me.sendingText = false
+            }
+          })
+          msg.body.chatType = 'singleChat'
+          me.$webIM.send(msg.body)
         }
       },
       upHandler (e) {
@@ -365,6 +364,7 @@
         let dataset = e.target.dataset
         if (dataset.model) {
           me.operationModel = dataset.model
+          model.save('operationModel', dataset.model)
         }
       }
     }

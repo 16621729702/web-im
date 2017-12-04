@@ -11,7 +11,7 @@ let conn = new window.WebIM.connection({
 
 conn.listen({
   onOpened: function (message) {
-    console.log('opened')        
+    console.log('opened')
   },
   onClosed: function (message) {
     console.log('close')
@@ -43,14 +43,14 @@ conn.listen({
         'Accept': 'audio/mp4'
       },
       onFileDownloadComplete: function (response) {
-        var objectURL = WebIM.utils.parseDownloadResponse.call(conn, response)
+        var objectURL = window.WebIM.utils.parseDownloadResponse.call(conn, response)
         node.src = objectURL
       },
       onFileDownloadError: function () {
         console.log('File down load error.')
       }
     }
-    WebIM.utils.download.call(conn, option)
+    window.WebIM.utils.download.call(conn, option)
   },
   onPresence: function (message) {},
   onRoster: function (message) {},
@@ -72,7 +72,7 @@ conn.listen({
   onError: function (message) {
     if (message.type === 8) {
       window.app.$notify('帐号在其他设备登录，已下线', 'error')
-    } else if (message.type === 7 || message.type === 32) {
+    } else if (message.type === 7) {
       window.app.$notify('网络中断，已下线', 'error')
     } else if (message.type === 16) {
       window.app.$notify('服务端关闭，已下线', 'error')
@@ -88,9 +88,9 @@ conn.listen({
     window.app.$router.replace('/login')
     window.app.$webIM.close()
   },
-  onReceivedMessage: function (message) {}, //收到消息送达服务器回执
-  onDeliveredMessage: function (message) {}, //收到消息送达客户端回执
-  onReadMessage: function (message) {}, //收到消息已读回执
+  onReceivedMessage: function (message) {},
+  onDeliveredMessage: function (message) {},
+  onReadMessage: function (message) {},
   onCreateGroup: function (message) {},
   onMutedMessage: function (message) {}
 })
