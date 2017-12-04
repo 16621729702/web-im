@@ -12,11 +12,16 @@
     </div>
     <div class="web-im-inputWindow" v-show="selected">
       <div class="web-im-selectors">
-        <span class="inlineblock icon icon-tupian pointer"></span>
+        <span class="inlineblock icon icon-tupian pointer" title="图片" @click="selectImages"></span>
+        <span class="inlineblock icon icon-biaoqing pointer" title="表情" @click="showEmojis"></span>
+        <input type="file" style="display: none;" multiple accept="image/jpg, image/png, image/gif, image/jpeg, image/jpg, image/raw" ref="file" @change="sendImageMessage">
+        <div class="web-im-emojiMap clr" @click="selectEmoji" v-show="showEmoji">
+          <img class="fl pointer" v-for="(value, key) in emoji" :data-emoji="key" :title="key.replace(reg, '')" :src="emojiUrl.replace('{name}', value)" />
+        </div>
       </div>
       <textarea class="boxsizing web-im-textarea" v-model="messageText" placeholder="文字消息..." @keydown="downHandler" @keyup="upHandler"></textarea>
       <div class="boxsizing fr web-im-operationModel pointer" @click="showModels"></div>
-      <div class="fr web-im-send tc pointer" @click="sendMessage">发送</div>
+      <div class="fr web-im-send tc pointer" @click="sendTextMessage">发送</div>
       <div class="boxsizing fr web-im-operationModels pointer" v-show="showModel" @click="selectModel">
         <div data-model="1" :class="[operationModel === '1' ? 'selected' : '']">enter发送消息，ctrl + enter换行</div>
         <div data-model="2" :class="[operationModel === '2' ? 'selected' : '']">ctrl + enter发送消息，enter换行</div>
@@ -28,6 +33,7 @@
 <script>
   import ContactItem from '@/components/ContactItem'
   import Messages from '@/components/Messages'
+  import emoji from 'module_path/emoji'
 
   export default {
     name: 'Chat',
@@ -37,10 +43,14 @@
     },
     data () {
       return {
+        reg: /[^\u4e00-\u9fa5]/g,
         messageText: '',
         keyDown: false,
         operationModel: '1',
-        showModel: false
+        showModel: false,
+        showEmoji: false,
+        emoji: emoji,
+        emojiUrl: 'https://s.ziyadiaoyu.com/{name}.png'
       }
     },
     computed: {
@@ -55,6 +65,9 @@
       },
       chatRecord () {
         return this.$store.getters.getChatRecord
+      },
+      user () {
+       return this.$store.getters.getUser
       },
       selectedRecord () {
         let me = this
@@ -76,19 +89,21 @@
     },
     created () {
       let me = this
-      document.addEventListener('click', function () { me.showModel = false }, false)
+      document.addEventListener('click', function () {
+        me.showModel = false
+        me.showEmoji = false
+      }, false)
       me.$ajax({
         url: 'https://www.ziyadiaoyu.com/biz_im_list?token=' + me.$cookie.analysisCookie().token + '&random=' + (new Date()).getTime(),
         type: 'get',
         success: function (data) {
           let json = JSON.parse(data).entities.messages
-          let user = me.$store.getters.getUser
-          if (user.username) {
+          if (me.user.username) {
             json.forEach((item) => {
               if (item.from_user) {
                 const payload = item.new_payload.bodies[0]
-                const from_user = (item.from_user.username !== user.username ? item.from_user : item.to_user)
-                const to_user = (item.from_user.username === user.username ? item.from_user : item.to_user)
+                const from_user = (item.from_user.username !== me.user.username ? item.from_user : item.to_user)
+                const to_user = (item.from_user.username === me.user.username ? item.from_user : item.to_user)
                 let finalType = payload.type
                 let message = {
                   error: false,
@@ -118,7 +133,7 @@
                     }
                   }
                 } else if (payload.type === 'img') {
-                  message.accessToken = user.token
+                  message.accessToken = me.user.token
                   message.secret = payload.secret
                   message.filename = payload.filename
                   message.url = payload.url
@@ -138,7 +153,7 @@
                 } else {
                   return
                 }
-                message = me.$tranformHistoryMessage(message, finalType, user)
+                message = me.$tranformHistoryMessage(message, finalType, me.user)
                 if (!me.contact[from_user.username]) {
                   me.$store.commit('setContact', {
                     name: from_user.username,
@@ -167,10 +182,83 @@
       })
     },
     methods: {
-      sendMessage () {
+      sendImageMessage () {
+        let me = this
+        const id = me.$webIM.getUniqueId()
+        let msg = new WebIM.message('img', id)
+        let file = WebIM.utils.getFileUrl(me.$refs.file)
+        console.log(file, me.$refs.file.files)
+        return
+        const allowType = {
+            'jpg': true,
+            'gif': true,
+            'png': true,
+            'jpeg': true,
+            'raw': true
+        }
+        if (file.filetype.toLowerCase() in allowType) {
+            var option = {
+                apiUrl: WebIM.config.apiURL,
+                file: file,
+                to: 'username',                       // 接收消息对象
+                roomType: false,
+                chatType: 'singleChat',
+                onFileUploadError: function () {      // 消息上传失败
+                    console.log('onFileUploadError');
+                },
+                onFileUploadComplete: function () {   // 消息上传成功
+                    console.log('onFileUploadComplete');
+                },
+                success: function () {                // 消息发送成功
+                    console.log('Success');
+                },
+                flashUpload: WebIM.flashUpload
+            };
+            msg.set(option);
+            conn.send(msg.body);
+        }
+      },
+      sendTextMessage () {
         let me = this
         if (me.messageText) {
-          me.messageText = ''
+          const id = me.$webIM.getUniqueId()
+          let msg = new WebIM.message('txt', id)
+          msg.set({
+              msg: me.messageText,
+              to: me.selected,
+              roomType: false,
+              success: function (id, serverMsgId) {
+                console.log(id, serverMsgId)
+                const now = new Date()
+                let message = {
+                  error: false,
+                  data: me.messageText,  
+                  id: id,
+                  created: now.getTime(),
+                  sentByMe: true,
+                  status: '',
+                  type: "chat",
+                  from: me.user.username,
+                  to: me.selected,
+                  ext: {
+                    avatar: me.user.avatar,
+                    nickname:  me.user.nick
+                  }
+                }
+                message = me.$tranformHistoryMessage(message, 'txt', me.user)
+                me.$store.dispatch('setChatRecord', {
+                  name: me.selected,
+                  data: [message.data],
+                  created: now.getTime()
+                })
+                me.messageText = ''
+              },
+              fail: function (e) {
+                console.log(e, "Send private text error")
+              }
+          });
+          msg.body.chatType = 'singleChat';
+          me.$webIM.send(msg.body);
         }
       },
       upHandler (e) {
@@ -190,20 +278,36 @@
             if (me.keyDown) {
               me.messageText += '\n'
             } else {
-              me.sendMessage()
+              me.sendTextMessage()
             }
           } else {
             if (me.keyDown) {
-              me.sendMessage()
+              me.sendTextMessage()
             } else {
               me.messageText += '\n'
             }
           }
         }
       },
+      selectImages () {
+        this.$refs.file.click()
+      },
+      showEmojis (e) {
+        e.stopPropagation()
+        this.showEmoji = true
+        this.showModel = false
+      },
+      selectEmoji (e) {
+        let me = this
+        let dataset = e.target.dataset
+        if (dataset.emoji) {
+          me.messageText += dataset.emoji
+        }
+      },
       showModels (e) {
         e.stopPropagation()
         this.showModel = true
+        this.showEmoji = false
       },
       selectModel (e) {
         let me = this

@@ -12,7 +12,7 @@ export default {
   data () {
     return {
       text: '',
-      emojiUrl: 'https://s.ziyadiaoyu.com/{name}.png'
+      emojiUrl: '<img src="https://s.ziyadiaoyu.com/{name}.png" width="30" height="30" class="web-im-emoji" />'
     }
   },
   mounted () {
@@ -22,7 +22,7 @@ export default {
       return '<a class="inlineblock web-im-textHref" target="_blank" href="' + item + '">' + item + '</a>'
     })
     me.text = text.replace(/\[[^\x00-\xff]+\]/g, function (str) {
-      return '<img src="' + me.emojiUrl.replace('{name}', emoji[str]) + '" width="30" height="30" class="web-im-emoji" />'
+      return me.emojiUrl.replace('{name}', emoji[str])
     })
   }
 }

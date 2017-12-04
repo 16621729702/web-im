@@ -45,6 +45,7 @@
     height: 144px; 
 
     .web-im-selectors {
+      position: relative;
       width: 100%;
       height: 26px;
       border-top: 1px solid #f2f2f2;
@@ -53,6 +54,22 @@
       color: #666;
       .inlineblock {
         margin-left: 10px;
+      }
+      .web-im-emojiMap {
+        position: absolute;
+        left: 0;
+        bottom: 100%;
+        padding: 4px;
+        box-shadow: 0 0 2px 2px #ccc;
+        background-color: #fff;
+        img {
+          margin: 2px;
+          width: 26px;
+          height: 26px;
+          &:hover {
+            background-color: #e5e5e5;
+          }
+        }
       }
     }
     .web-im-textarea {

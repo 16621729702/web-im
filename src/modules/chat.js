@@ -17,6 +17,7 @@ conn.listen({
     console.log(message)
   },
   onTextMessage: function (message) {
+    console.log(message)
     window.app.$soundNotify()
     window.app.$tranformReceivedMessage(message, 'txt', true)
   },
