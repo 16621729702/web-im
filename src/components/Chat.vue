@@ -55,7 +55,8 @@
         showEmoji: false,
         emoji: emoji,
         emojiUrl: 'https://s.ziyadiaoyu.com/{name}.png',
-        loading: true
+        loading: true,
+        sendingText: false
       }
     },
     computed: {
@@ -268,7 +269,8 @@
       },
       sendTextMessage () {
         let me = this
-        if (me.messageText) {
+        if (me.messageText && !me.sendingText) {
+          me.sendingText = true
           const id = me.$webIM.getUniqueId()
           let msg = new WebIM.message('txt', id)
           msg.set({
@@ -299,9 +301,11 @@
                   created: now.getTime()
                 })
                 me.messageText = ''
+                me.sendingText = false
               },
               fail: function (e) {
                 me.$notify('消息发送失败', 'error')
+                me.sendingText = false
               }
           });
           msg.body.chatType = 'singleChat';
