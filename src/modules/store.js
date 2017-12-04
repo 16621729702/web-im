@@ -10,7 +10,8 @@ let store = new Vuex.Store({
     contact: {},
     user: {},
     selected: '',
-    sound: ''
+    sound: '',
+    contactArray: []
   },
   mutations: {
     setUser (state, u) {
@@ -48,6 +49,19 @@ let store = new Vuex.Store({
   actions: {
     setChatRecord (context, c) {
       const dataType = typeDetection(c.data)
+      if (!context.state.chatRecord[c.name]) {
+        context.state.contactArray.push({ u: c.name, created: c.created })
+      } else {
+        let i = 0
+        let length = context.state.contactArray.length
+        for (; i < length; i++) {
+          if (context.state.contactArray[i].u === c.name) {
+            context.state.contactArray[i].created = c.created
+            break
+          }
+        }
+      }
+      context.state.contactArray.sort((a, b) => a.created > b.created ? -1 : 1)
       if (c.replace) {
         if (dataType === 'array') {
           Vue.set(context.state.chatRecord, c.name, c.data)
@@ -71,7 +85,8 @@ let store = new Vuex.Store({
     getChatRecord: state => state.chatRecord,
     getContact: state => state.contact,
     getSelected: state => state.selected,
-    getSound: state => state.sound
+    getSound: state => state.sound,
+    getContactArray: state => state.contactArray
   }
 })
 export default store

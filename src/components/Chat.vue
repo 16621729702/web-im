@@ -1,7 +1,8 @@
 <template>
   <div class="web-im-chatWindow">
     <div class="web-im-contactWindow">
-      <ContactItem v-for="(value, key) in contact" :user="value" :key="key" :username="key"></ContactItem>
+      <!-- <ContactItem v-for="(value, key) in contact" :user="value" :key="key" :username="key"></ContactItem> -->
+      <ContactItem v-for="item in contactArray" :user="contact[item.u]" :key="item.u" :username="item.u"></ContactItem>
     </div>
     <div class="web-im-messageWindow" v-show="selected">
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
@@ -49,6 +50,9 @@
       contact () {
         return this.$store.getters.getContact
       },
+      contactArray () {
+        return this.$store.getters.getContactArray
+      },
       chatRecord () {
         return this.$store.getters.getChatRecord
       },
@@ -63,7 +67,7 @@
         me.$nextTick(() => {
           let all = document.querySelectorAll('.web-im-message')
           const len = all.length
-          if (len> 1) {
+          if (len > 1) {
             all[len - 1].scrollIntoView(false)
             all = null
           }
@@ -72,7 +76,7 @@
     },
     created () {
       let me = this
-      document.addEventListener('click', function () { me.showModel = false }, false);
+      document.addEventListener('click', function () { me.showModel = false }, false)
       me.$ajax({
         url: 'https://www.ziyadiaoyu.com/biz_im_list?token=' + me.$cookie.analysisCookie().token + '&random=' + (new Date()).getTime(),
         type: 'get',
@@ -149,7 +153,8 @@
                   me.$store.dispatch('setChatRecord', {
                     replace: true,
                     name: from_user.username,
-                    data: [message.data]
+                    data: [message.data],
+                    created: message.created
                   })
                 }
               }
@@ -202,7 +207,7 @@
       },
       selectModel (e) {
         let me = this
-        let dataset = e.target.dataset;
+        let dataset = e.target.dataset
         if (dataset.model) {
           me.operationModel = dataset.model
         }

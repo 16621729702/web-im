@@ -100,7 +100,7 @@ function f (message, type, notification) {
       }
     })
   } else {
-    if (name !== me.$store.getters.getSelected){
+    if (name !== me.$store.getters.getSelected) {
       me.$store.commit('setConcatUnread', {
         append: true,
         name: name,
@@ -119,7 +119,8 @@ function f (message, type, notification) {
   me.$store.dispatch('setChatRecord', {
     replace: false,
     name: name,
-    data: [result.data]
+    data: [result.data],
+    created: message.created
   })
 }
 

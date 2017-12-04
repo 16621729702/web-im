@@ -115,7 +115,8 @@ export default {
             me.$store.dispatch('setChatRecord', {
               replace: true,
               name: me.username,
-              data: dataArray
+              data: dataArray,
+              created: json[json.length - 1].created
             })
             me.successhandler(uid)
           },
@@ -131,7 +132,7 @@ export default {
       let me = this
       me.$store.commit('setConcatStatus', { name: uid, status: true })
       me.$store.commit('setSelected', uid)
-      receipt(me.curUser.username , uid)
+      receipt(me.curUser.username, uid)
     }
   }
 }
