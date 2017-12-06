@@ -50,7 +50,7 @@ export default {
       if (me.text === '登录' && me.username && me.pwd) {
         me.text = '登录中...'
         me.$ajax({
-          url: '/login',
+          url: '/chat/login.php', // '/login',
           type: 'post',
           headers: {
             'Content-Type': 'application/json; charset=utf-8'

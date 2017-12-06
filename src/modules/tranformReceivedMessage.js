@@ -8,7 +8,9 @@ function f (message, type, notification) {
     curUser = me.$store.getters.getUser
   }
   let name = message.from
-  let result = {}
+  let result = {
+    created: new Date().getTime()
+  }
   let notifyBody = {
     title: message.ext.nickname
   }
@@ -120,7 +122,7 @@ function f (message, type, notification) {
     replace: false,
     name: name,
     data: [result.data],
-    created: message.created
+    created: result.created
   })
 }
 

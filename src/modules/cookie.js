@@ -6,8 +6,10 @@ function setCookie (name, value, expires) {
 function analysisCookie () {
   let parms = {}
   document.cookie.split(';').forEach((item) => {
-    const temp = item.split('=')
-    parms[temp[0].trim()] = temp[1].trim()
+    if (item) {
+      const temp = item.split('=')
+      parms[temp[0].trim()] = temp[1].trim()
+    }
   })
   return parms
 }
