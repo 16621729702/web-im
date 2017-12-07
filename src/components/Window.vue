@@ -58,7 +58,7 @@
         me.$cookie.setCookie('avatar', '', -1)
         me.$cookie.setCookie('token', '', -1)
         me.$cookie.setCookie('pd', '', -1)
-        me.$store.commit('setUser', {})
+        me.$store.commit('reset')
         me.$notify('已退出', 'success')
         me.$router.replace('/login')
         me.$webIM.close()

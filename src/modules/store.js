@@ -48,6 +48,15 @@ let store = new Vuex.Store({
     },
     initChatRecord (state, c) {
       state.chatRecord[c.name] = c.data
+    },
+    reset (state) {
+      Vue.set(state, 'chatRecord', {})
+      Vue.set(state, 'contact', {})
+      Vue.set(state, 'user', {})
+      Vue.set(state, 'selected', '')
+      Vue.set(state, 'sound', '')
+      Vue.set(state, 'contactArray', [])
+      Vue.set(state, 'loadingMessage', true)
     }
   },
   actions: {

@@ -65,7 +65,7 @@ conn.listen({
       window.app.$cookie.setCookie('avatar', '', -1)
       window.app.$cookie.setCookie('token', '', -1)
       window.app.$cookie.setCookie('pd', '', -1)
-      window.app.$store.commit('setUser', {})
+      window.app.$store.commit('reset')
       window.app.$notify('已下线', 'error')
       window.app.$router.replace('/login')
       window.app.$webIM.close()
@@ -90,7 +90,7 @@ conn.listen({
       window.app.$cookie.setCookie('avatar', '', -1)
       window.app.$cookie.setCookie('token', '', -1)
       window.app.$cookie.setCookie('pd', '', -1)
-      window.app.$store.commit('setUser', {})
+      window.app.$store.commit('reset')
       window.app.$router.replace('/login')
       window.app.$webIM.close()
     }

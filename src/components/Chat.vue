@@ -20,7 +20,7 @@
           <img class="fl pointer" v-for="(value, key) in emoji" :data-emoji="key" :title="key.replace(reg, '')" :src="emojiUrl.replace('{name}', value)" />
         </div>
       </div>
-      <textarea class="boxsizing web-im-textarea" v-model="messageText" placeholder="文字消息..." @keydown="downHandler" @keyup="upHandler"></textarea>
+      <textarea class="boxsizing web-im-textarea" v-model="messageText" placeholder="文字消息..." @keydown="downHandler" @keyup="upHandler" ref="textarea"></textarea>
       <div class="boxsizing fr web-im-operationModel pointer" @click="showModels"></div>
       <div class="fr web-im-send tc pointer" @click="sendTextMessage">发送</div>
       <div class="boxsizing fr web-im-operationModels pointer" v-show="showModel" @click="selectModel">
@@ -276,6 +276,10 @@
             msg: me.messageText,
             to: me.selected,
             roomType: false,
+            ext: {
+              avatar: me.user.avatar,
+              nickname: me.user.nick
+            },
             success: function (id, serverMsgId) {
               const now = new Date()
               let message = {
@@ -298,6 +302,10 @@
                 name: me.selected,
                 data: [message.data],
                 created: now.getTime()
+              })
+              me.$store.commit('setConcatBrief', {
+                name: me.selected,
+                brief: message.brief
               })
               me.messageText = ''
               me.sendingText = false
@@ -352,6 +360,7 @@
         let dataset = e.target.dataset
         if (dataset.emoji) {
           me.messageText += dataset.emoji
+          me.$refs.textarea.focus()
         }
       },
       showModels (e) {
