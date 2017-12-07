@@ -1,3 +1,5 @@
+import uuid from 'uuid'
+
 function f (message, type, me) {
   let result = {
     sentByMe: message.from === me.username,
@@ -6,7 +8,8 @@ function f (message, type, me) {
   result.data = {
     sentByMe: message.from === me.username,
     type: type,
-    status: message.status
+    status: message.status,
+    _id: uuid.v4()
   }
   result.data.userInfo = {
     avatar: (result.sentByMe ? me.avatar : message.ext.avatar),

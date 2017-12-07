@@ -1,4 +1,5 @@
 import notify from 'module_path/notification'
+import uuid from 'uuid'
 
 let curUser = null
 function f (message, type, notification) {
@@ -34,7 +35,8 @@ function f (message, type, notification) {
   result.data = {
     sentByMe: result.sentByMe,
     type: finalType,
-    status: message.status
+    status: message.status,
+    _id: uuid.v4()
   }
   result.data.userInfo = {
     avatar: (result.sentByMe ? result.avatar : message.ext.avatar),

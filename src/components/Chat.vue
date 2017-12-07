@@ -8,7 +8,7 @@
       <div class="web-im-messageTitle tc" v-if="contact && selected">{{ contact[selected].nick }}</div>
       <div class="web-im-messages clr">
         <Loading v-show="loadingMessage"></Loading>
-        <Messages v-show="!loadingMessage" v-if="selectedRecord" v-for="(item, index) in selectedRecord" :item="item" :key="index"></Messages>
+        <Messages v-show="!loadingMessage" v-if="selectedRecord" v-for="item in selectedRecord" :item="item" :key="item._id"></Messages>
       </div>
     </div>
     <div class="web-im-inputWindow" v-show="selected">
