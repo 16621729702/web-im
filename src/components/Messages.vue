@@ -5,21 +5,21 @@
     <span :class="'inlineblock ' + byMe +  ' web-im-messageFormat'">{{ item.format }}</span>
     <div class="clr"></div>
     <div :class="['inlineblock', 'web-im-messageContent', (item.type === 'audio' && item.url === soundHref) ? 'web-im-blink' : '']">
-      <img class="web-im-messageImage" v-if="item.type === 'img'" :src="item.url" :height="item.width > 200 ? (item.height / item.width * 200) : item.height" />
+      <img class="web-im-messageImage" v-if="item.type === 'img'" :src="item.url" :height="item.width > 200 ? (item.height / item.width * 200) : item.height" @dblclick="scale"/>
       <div class="web-im-messageUrl pointer" v-else-if="item.type === 'url'" @click="openNewTab" :data-href="item.href">
-        <img :src="item.image" />
+        <img :src="item.image"  @dblclick="scale"/>
         <div class="web-im-urlTitle">{{ item.title }}</div>
         <div class="web-im-urlDescription">{{ item.detail }}</div>
       </div>
       <AudioMessage v-else-if="item.type === 'audio'" :message="item"></AudioMessage>
       <div v-else-if="item.type ==='loc'">
-        <img class="web-im-messageImage" :src="item.url"/><br>
+        <img class="web-im-messageImage" :src="item.url"  @dblclick="scale"/><br>
         {{ item.location.address }}<br>
         {{ item.location.name }}<br>
         lng: {{item.location.lng}}<br>
         lat: {{item.location.lat}}
       </div>
-      <img class="web-im-messageImage" v-else-if="item.type === 'sticker'" :src="sticker.baseUlr.replace('{name}', item.data)" :height="sticker.height" />
+      <img class="web-im-messageImage" v-else-if="item.type === 'sticker'" :src="sticker.baseUlr.replace('{name}', item.data)" :height="sticker.height"  @dblclick="scale"/>
       <TextMessage v-else :message="item"></TextMessage>
     </div>
 </div>
@@ -61,6 +61,9 @@ export default {
   methods: {
     openNewTab (e) {
       window.open(e.currentTarget.dataset.href)
+    },
+    scale (e) {
+      this.$scalePicture(e.currentTarget.src)
     }
   }
 }
